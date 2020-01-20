@@ -1,23 +1,25 @@
-import numpy as np
-from keras.models import load_model
-import imgs,data,files
+import os.path
+import single,files
 
-def extract_feats(frame_path,model_path,out_path=None):
-    extractor=load_model(model_path)
-    img_seqs=imgs.read_seqs(frame_path)
-    feats_seq={name_i:data.format_frames(seq_i)  
-                for name_i,seq_i in img_seqs.items()}
-    feat_dict={name_i:extractor.predict(seq_i) 
-                for name_i,seq_i in feats_seq.items()}
-    save_seqs(feat_dict,out_path)
-
-def save_seqs(feat_dict,out_path):
+def frame_feats(frame_path,model_path,out_path=None):
+    if(not out_path):
+        dst_dir=os.path.split(model_path)[0]
+        out_path=dst_dir+'/seqs'	
     files.make_dir(out_path)
-    for name_j,seq_j in feat_dict.items():
-        name_j=name_j.split('.')[0]
-        out_j=out_path+'/'+name_j
-        np.save(out_j,seq_j)
+    for i,in_i in enumerate(files.top_files(model_path)):
+        out_i="%s/nn%d"%(out_path,i)
+        single.extract_frame_feats(frame_path,in_i,out_i)
+
+def ts_feats(seqs_path,out_path=None):
+    if(not out_path):
+        dst_dir=os.path.split(seqs_path)[0]
+        out_path=dst_dir+'/feats'	
+    files.make_dir(out_path)
+    for i,in_i in enumerate(files.top_files(seqs_path)):
+        out_i="%s/nn%d"%(out_path,i)
+        single.compute_ts_feats(in_i,out_i)
 
 frame_path='../../sim3/time'
-model_path='../../sim3/ens3/models/nn0'
-extract_feats(frame_path,model_path,'test')
+model_path='../../sim3/ens3/models'
+#frame_feats(frame_path,model_path)
+ts_feats('../../sim3/ens3/seqs')
