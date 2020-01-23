@@ -10,7 +10,7 @@ def make_model(params): #ts_network
     right_input = Input(input_shape)
 
     model = Sequential()
-    add_basic(model)
+    add_small(model)
 
     encoded_l = model(left_input)
     encoded_r = model(right_input)
@@ -24,15 +24,18 @@ def make_model(params): #ts_network
     extractor.summary()
     return siamese_net,extractor
 
-def add_basic(model):
+def add_small(model):
+    return add_basic(model,n_hidden=32,n_kerns=64)
+
+def add_basic(model,n_hidden=64,n_kerns=256):
     activ='relu'
-    model.add(Conv1D(256, kernel_size=8,activation=activ,name='conv1'))
+    model.add(Conv1D(n_kerns, kernel_size=8,activation=activ,name='conv1'))
     model.add(MaxPooling1D(pool_size=4,name='pool1'))
-    model.add(Conv1D(256, kernel_size=8,activation=activ,name='conv2'))
+    model.add(Conv1D(n_kerns, kernel_size=8,activation=activ,name='conv2'))
     model.add(MaxPooling1D(pool_size=4,name='pool2'))
     model.add(Flatten())
     model.add(Dropout(0.5))
-    model.add(Dense(64, activation=activ,name='hidden',kernel_regularizer=regularizers.l1(0.01)))
+    model.add(Dense(n_hidden, activation=activ,name='hidden',kernel_regularizer=regularizers.l1(0.01)))
     return model
 
 def contr_loss(encoded_l,encoded_r):
