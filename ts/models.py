@@ -10,7 +10,7 @@ def make_model(params): #ts_network
     right_input = Input(input_shape)
 
     model = Sequential()
-    add_small(model)
+    add_rect(model)
 
     encoded_l = model(left_input)
     encoded_r = model(right_input)
@@ -24,15 +24,24 @@ def make_model(params): #ts_network
     extractor.summary()
     return siamese_net,extractor
 
-def add_small(model):
-    return add_basic(model,n_hidden=32,n_kerns=64)
+def add_rect(model):
+    n_kerns,kern_size,pool_size=[128,128],[8,8],[4,2]
+    return basic_template(model,64,n_kerns,kern_size,pool_size)
 
-def add_basic(model,n_hidden=64,n_kerns=256):
+def add_small(model):
+    n_kerns,kern_size.pool_size=[128,128],[8,8],[4,4]
+    return basic_template(model,64,n_kerns,kern_size,pool_size)
+
+def add_basic(model):
+    n_kerns,kern_size.pool_size=[256,256],[8,8],[4,4]
+    return basic_template(model,64,n_kerns,ker_size,pool_size)
+
+def basic_template(model,n_hidden,n_kerns,kern_size,pool_size):
     activ='relu'
-    model.add(Conv1D(n_kerns, kernel_size=8,activation=activ,name='conv1'))
-    model.add(MaxPooling1D(pool_size=4,name='pool1'))
-    model.add(Conv1D(n_kerns, kernel_size=8,activation=activ,name='conv2'))
-    model.add(MaxPooling1D(pool_size=4,name='pool2'))
+    model.add(Conv1D(n_kerns[0], kernel_size=kern_size[0],activation=activ,name='conv1'))
+    model.add(MaxPooling1D(pool_size=pool_size[0],name='pool1'))
+    model.add(Conv1D(n_kerns[1], kernel_size=kern_size[1],activation=activ,name='conv2'))
+    model.add(MaxPooling1D(pool_size=pool_size[1],name='pool2'))
     model.add(Flatten())
     model.add(Dropout(0.5))
     model.add(Dense(n_hidden, activation=activ,name='hidden',kernel_regularizer=regularizers.l1(0.01)))
