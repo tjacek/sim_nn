@@ -6,8 +6,11 @@ def outliner_transform(in_path,out_path):
         pclouds=[ nonzero_points(frame_i) for frame_i in frames]
         center=center_of_mass(pclouds)
         pclouds=[ pcloud_i.T-center for pcloud_i in pclouds ]
-        pclouds=[ pcloud_i *pcloud_i for pcloud_i in pclouds ]
-        raise Exception(center)
+        pclouds=[ pcloud_i *pcloud_i*np.sign(pcloud_i) for pcloud_i in pclouds ]
+        pc_min,pc_max=get_min(pclouds),get_max(pclouds)
+        pclouds=[ ((pcloud_i-pc_min)/pc_max)*128 for pcloud_i in pclouds]
+        new_frames=[get_proj(pcloud_i) for pcloud_i in pclouds]
+        return new_frames
     imgs.transform(in_path,out_path,helper,single_frame=False)
 
 def nonzero_points(frame_i):
@@ -22,5 +25,21 @@ def center_of_mass(pclouds):
         for point_j in pcloud_i.T:
             all_points.append(point_j)
     return np.mean(all_points,axis=0)
+
+def get_min(pclouds):
+    return np.amin([ np.amin(pcloud_i,axis=0) 
+                      for pcloud_i in pclouds],axis=0).T
+
+def get_max(pclouds):
+    return np.amax([ np.amax(pcloud_i,axis=0) 
+                      for pcloud_i in pclouds],axis=0).T
+
+def get_proj(pclouds):
+    img_i=np.zeros((128,128),dtype=float)
+    for point_j in pclouds:
+        x_j,y_j=int(point_j[0]),int(point_j[1])
+        if( x_j<128  and y_j<126):
+            img_i[x_j][y_j]=100
+    return img_i
 
 outliner_transform("../MSR_out/box","../MSR_out/imgset")
