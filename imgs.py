@@ -27,6 +27,8 @@ def transform(in_path,out_path,frame_fun,single_frame=False):
         save_frames(out_i,new_frames)
 
 def action_img(in_path,out_path,action_fun):
+    if(type(action_fun)==list):
+        action_fun=Pipeline(action_fun)
     files.make_dir(out_path)
     for in_i in files.top_files(in_path):
         frames=read_frames(in_i)
