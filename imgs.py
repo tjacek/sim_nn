@@ -26,6 +26,14 @@ def transform(in_path,out_path,frame_fun,single_frame=False):
             new_frames=frame_fun(frames)
         save_frames(out_i,new_frames)
 
+def action_img(in_path,out_path,action_fun):
+    files.make_dir(out_path)
+    for in_i in files.top_files(in_path):
+        frames=read_frames(in_i)
+        action_img_i=action_fun(frames)
+        out_i= out_path+'/' + in_i.split('/')[-1]+".png"
+        cv2.imwrite(out_i,action_img_i)
+
 def seq_tranform(frame_fun,img_seqs):
     return { name_i:[frame_fun(frame_j) for frame_j in seq_i]
                     for name_i,seq_i in img_seqs.items()}
