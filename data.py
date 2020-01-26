@@ -11,6 +11,12 @@ def make_dataset(in_path,frames=True,full=False):
         train,test=split(img_seqs.keys())
         return format(train,img_seqs),format(test,img_seqs)
 
+def split_dict(action_dict,selector=None):
+    train,test=split(action_dict.keys(),selector=None)
+    train={ name_i:action_dict[name_i] for name_i in train}
+    test={ name_i:action_dict[name_i] for name_i in test}
+    return train,test
+
 def split(names,selector=None):
     if(not selector):
         selector=lambda name_i: (parse_name(name_i)[1]%2==1)
@@ -53,7 +59,7 @@ def count_channels(X):
 
 def format_frames(frames ,n_channels=None):
     if(not n_channels):
-        n_channels=count_channels(frames)
+        n_channels=count_channels(frames)        
     return np.array([np.array(np.vsplit(frame_i,n_channels)).T
                       for frame_i in frames])
 
