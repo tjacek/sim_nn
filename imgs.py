@@ -65,7 +65,7 @@ def save_frames(seq_path_i,seq_i):
         frame_name_j=seq_path_i+'/'+str(j)+".png"
         cv2.imwrite(frame_name_j,frame_j)
 
-def concat(in_path1,in_path2,out_path):
+def concat_seq(in_path1,in_path2,out_path):
     seq1,seq2=read_seqs(in_path1),read_seqs(in_path2)
     names=seq1.keys()
     concat_seqs={}
@@ -76,3 +76,11 @@ def concat(in_path1,in_path2,out_path):
         new_seq_i=np.concatenate( [seq1_i,seq2_i],axis=1)
         concat_seqs[name_i]=new_seq_i
     save_seqs(concat_seqs,out_path)
+
+def concat_frames(in_path1,in_path2,out_path):
+    seq1,seq2=read_frames(in_path1),read_frames(in_path2)
+#    size=min(len(seq1),len(seq2))
+    new_frames=[ np.concatenate([frame0,frame1],axis=0) 
+                for frame0,frame1 in zip(seq1,seq2)]
+    save_frames(out_path,new_frames)
+    

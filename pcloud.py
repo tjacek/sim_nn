@@ -1,11 +1,11 @@
 import numpy as np,cv2
 import imgs
 
-def outliner_transform(in_path,out_path):
+def outliner_transform(in_path,out_path,dims=0):
     def helper(frames):
         pclouds=[ nonzero_points(frame_i) for frame_i in frames]
         pclouds=normalize(pclouds)
-        new_frames=[get_proj(pcloud_i) for pcloud_i in pclouds]        
+        new_frames=[get_proj(pcloud_i,dims) for pcloud_i in pclouds]        
         action_img=np.mean(new_frames,axis=0)
         action_img[action_img >0]=100
         return action_img
@@ -43,10 +43,11 @@ def get_max(pclouds):
     return np.amax([ np.amax(pcloud_i,axis=0) 
                       for pcloud_i in pclouds],axis=0).T
 
-def get_proj(pclouds):
+def get_proj(pclouds,dims):
     img_i=np.zeros((128,128),dtype=float)
+    x,y=dims,(dims+1)%3
     for point_j in pclouds:
-        x_j,y_j=int(point_j[1]),int(point_j[2])
+        x_j,y_j=int(point_j[x]),int(point_j[y])
         if( x_j<128  and y_j<128):
             img_i[x_j][y_j]=100
         else:
@@ -66,4 +67,5 @@ def scale(binary_img ,dim_x=64,dim_y=64):
         return [  scale(frame_i,dim_x,dim_y) for frame_i in binary_img]
     return cv2.resize(binary_img,(dim_x,dim_y), interpolation = cv2.INTER_CUBIC)
 
-outliner_transform("../MSR_out/box","../MSR_out/yz")
+#outliner_transform("../MSR_out/box","../MSR_out/yz",2)
+imgs.concat_frames("../MSR_out/xy","../MSR_out/yz","../MSR_out/full")
