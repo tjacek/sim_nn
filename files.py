@@ -26,5 +26,6 @@ def make_dir(path):
         os.mkdir(path)
 
 def clean_str(name_i):
+    name_i=name_i.split("/")[-1]
     digits=[ str(int(digit_i)) for digit_i in re.findall(r'\d+',name_i)]
     return "_".join(digits)

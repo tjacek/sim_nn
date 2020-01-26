@@ -55,9 +55,12 @@ def save_seqs(seq_dict,out_path):
         seq_path_i=out_path+'/'+name_i
         save_frames(seq_path_i,seq_i)
 
-def read_frames(seq_path_i):
-    return [ cv2.imread(frame_path_j, cv2.IMREAD_GRAYSCALE)
-                for frame_path_j in files.top_files(seq_path_i)]
+def read_frames(seq_path_i,as_dict=False):
+    if(as_dict):
+        return {files.clean_str(path_j):cv2.imread(path_j,cv2.IMREAD_GRAYSCALE)
+                    for path_j in files.top_files(seq_path_i)}
+    return [ cv2.imread(path_j, cv2.IMREAD_GRAYSCALE)
+                for path_j in files.top_files(seq_path_i)]
 
 def save_frames(seq_path_i,seq_i):
     files.make_dir(seq_path_i)
@@ -78,9 +81,9 @@ def concat_seq(in_path1,in_path2,out_path):
     save_seqs(concat_seqs,out_path)
 
 def concat_frames(in_path1,in_path2,out_path):
-    seq1,seq2=read_frames(in_path1),read_frames(in_path2)
-#    size=min(len(seq1),len(seq2))
-    new_frames=[ np.concatenate([frame0,frame1],axis=0) 
-                for frame0,frame1 in zip(seq1,seq2)]
-    save_frames(out_path,new_frames)
-    
+    seq1,seq2=read_frames(in_path1,True),read_frames(in_path2,True)
+    files.make_dir(out_path)
+    for name_i in seq1.keys():
+        img0,img1=seq1[name_i],seq2[name_i] 
+        new_img_i=np.concatenate([img0,img1],axis=0)
+        cv2.imwrite(out_path+'/'+name_i+".png",new_img_i)
