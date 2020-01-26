@@ -4,8 +4,18 @@ from keras.models import Model,Sequential
 from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D,Activation,Lambda
 from keras import regularizers
-import imgs,data,gen
+import imgs,data,gen,single
 import ts.models
+from keras.models import load_model
+
+def extract(frame_path,model_path,out_path):
+    frames=imgs.read_frames(frame_path,as_dict=True)
+    X=data.format_frames(list(frames.values()))
+    names=list(frames.keys())
+    extractor=load_model(model_path)
+    X_feats=extractor.predict(X)
+    feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
+    single.save_ts_feats(feat_dict,out_path)
 
 def make_model(in_path,out_path=None,n_epochs=5):
     frames=imgs.read_frames(in_path,as_dict=True)
@@ -13,7 +23,8 @@ def make_model(in_path,out_path=None,n_epochs=5):
     X=data.format_frames(list(train.values()))
     y=[ int(name_i.split("_")[0])-1 for name_i in train.keys()]
     X,y=gen.full_data(X,y)
-    sim_metric,model=make_five(20,2,params=None)
+    n_channels=X[0].shape[-1]
+    sim_metric,model=make_five(20,n_channels,params=None)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):
         model.save(out_path)
