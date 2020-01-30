@@ -1,4 +1,37 @@
 import numpy as np
+import keras
+import imgs,data
+from keras.models import Model,Sequential
+from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
+from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D, Activation
+from keras import regularizers
+
+def train_model(in_path,out_path,n_epochs=5):
+    (X_train,y_train),test=data.make_dataset(in_path,frames=True,full=False)
+    X_train=data.format_frames(X_train)
+    y_train=keras.utils.to_categorical(y_train)   
+    n_cats,n_channels=y_train.shape[1],X_train.shape[-1]
+    model=make_model(n_cats,n_channels)#,params=None)
+    model.fit(X_train,y_train,epochs=n_epochs,batch_size=100)
+    if(out_path):
+        model.save(out_path)
+
+def make_model(n_cats,n_channels): #,params=None):
+    input_img = Input(shape=(64, 64, n_channels))
+    x=input_img
+    kern_size,pool_size,filters=(3,3),(2,2),[32,16,16,16]
+    for filtr_i in filters:
+        x = Conv2D(filtr_i, kern_size, activation='relu', padding='same')(x)
+        x = MaxPooling2D(pool_size, padding='same')(x)
+    x=Flatten()(x)
+    x=Dense(100, activation='relu',name="hidden",kernel_regularizer=regularizers.l1(0.01),)(x)
+    x=Dropout(0.5)(x)
+    x=Dense(units=n_cats,activation='softmax')(x)
+    model = Model(input_img, x)
+    model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.SGD(lr=0.001,  momentum=0.9, nesterov=True))
+    model.summary()
+    return model
 
 def sample_seq(frames,size=5):
     n_frames=len(frames)
