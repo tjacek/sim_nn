@@ -1,10 +1,22 @@
 import numpy as np
 import keras
-import imgs,data
+import imgs,data,single
 from keras.models import Model,Sequential
 from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D, Activation
 from keras import regularizers
+from keras.models import load_model
+
+def extract(frame_path,model_path,out_path):
+    seq_dict=imgs.read_seqs(frame_path)
+    model=load_model(model_path)
+    extractor=Model(inputs=model.input,
+                outputs=model.get_layer("hidden").output)
+    frame_feat_dict={}
+    for name_i,seq_i in seq_dict.items():
+        seq_i=data.format_frames(seq_i)
+        frame_feat_dict[name_i]=extractor.predict(seq_i)
+    single.save_frame_feats(frame_feat_dict,out_path)
 
 def train_model(in_path,out_path,n_epochs=5):
     (X_train,y_train),test=data.make_dataset(in_path,frames=True,full=False)
