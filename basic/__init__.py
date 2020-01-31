@@ -1,11 +1,20 @@
 import numpy as np
 import keras
-import imgs,data,single
+import imgs,data,single,files
 from keras.models import Model,Sequential
 from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D, Activation
 from keras import regularizers
 from keras.models import load_model
+
+def ens(in_path,out_path,n_epochs=5):
+    (X_train,y_train),test=data.make_dataset(in_path,frames=True,full=False)
+    X_train=data.format_frames(X_train)
+    n_cats=max(y_train)+1
+    files.make_dir(out_path)
+    for i in range(10,n_cats):
+        out_i=out_path+'/nn'+str(i)
+        train_model((X_train,y_train),out_i,n_epochs,binary=i)
 
 def extract(frame_path,model_path,out_path):
     seq_dict=imgs.read_seqs(frame_path)
@@ -18,9 +27,14 @@ def extract(frame_path,model_path,out_path):
         frame_feat_dict[name_i]=extractor.predict(seq_i)
     single.save_frame_feats(frame_feat_dict,out_path)
 
-def train_model(in_path,out_path,n_epochs=5):
-    (X_train,y_train),test=data.make_dataset(in_path,frames=True,full=False)
-    X_train=data.format_frames(X_train)
+def train_model(in_path,out_path,n_epochs=5,binary=None):
+    if(type(in_path)==str):
+        (X_train,y_train),test=data.make_dataset(in_path,frames=True,full=False)
+        X_train=data.format_frames(X_train)
+    else:
+        X_train,y_train=in_path
+    if(type(binary)==int):
+        y_train=[int(y_i==binary) for y_i in y_train]
     y_train=keras.utils.to_categorical(y_train)   
     n_cats,n_channels=y_train.shape[1],X_train.shape[-1]
     model=make_model(n_cats,n_channels)#,params=None)
