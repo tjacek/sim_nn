@@ -63,10 +63,11 @@ def format_frames(frames ,n_channels=None):
     return np.array([np.array(np.vsplit(frame_i,n_channels)).T
                       for frame_i in frames])
 
-def to_seq_dataset(names,img_seqs):
+def to_seq_dataset(seq_dict):
     X,y=[],[]
-    for name_i in names:
+    for name_i in seq_dict.keys():
         cat_i=parse_name(name_i)[0]-1
-        X.append(img_seqs[name_i])
+        seq_i=format_frames(seq_dict[name_i])
+        X.append(seq_i)
         y.append(cat_i)
     return X,y
