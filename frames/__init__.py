@@ -8,14 +8,17 @@ import imgs,data,gen,single
 import sim#ts.models
 from keras.models import load_model
 
-#def extract(frame_path,model_path,out_path):
-#    frames=imgs.read_frames(frame_path,as_dict=True)
-#    X=data.format_frames(list(frames.values()))
+def extract(frame_path,model_path,out_path):
+    frames=imgs.read_seqs(frame_path)
+#    X,y=data.to_seq_dataset(frames)
 #    names=list(frames.keys())
-#    extractor=load_model(model_path)
+    model=load_model(model_path)
+    extractor=Model(inputs=model.input,
+                outputs=model.get_layer("hidden").output)
 #    X_feats=extractor.predict(X)
 #    feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
-#    single.save_ts_feats(feat_dict,out_path)
+    feat_dict=single.extractor_template(frames,extractor)
+    single.save_frame_feats(feat_dict,out_path)
 
 def make_model(in_path,out_path=None,n_epochs=5):
     frames=imgs.read_seqs(in_path)
