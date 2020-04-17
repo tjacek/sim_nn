@@ -25,14 +25,18 @@ def make_model(in_path,out_path,n_epochs=5):
 def ens_extract(frame_path,model_path,feat_path):
     files.make_dir(feat_path)
     for i,in_i in enumerate(files.top_files(frame_path)):
-        seq_dict=single.read_frame_feats(in_i)
-        (X,y),names=get_data(seq_dict),list(seq_dict.keys())
-        model_i=load_model(model_path+'/nn'+str(i))
-        extr_i=Model(inputs=model_i.input,
-                outputs=model_i.get_layer("hidden").output)
-        feats_i=extr_i.predict(X)
-        feat_dict_i={ names[j]:sample_ij for j,sample_ij in enumerate(feats_i)}
-        single.save_ts_feats(feat_dict_i,feat_path+'/nn'+str(i))
+        out_i='%s/nn%d' % (feat_path,i)
+        model_i='%s/nn%d' % (model_path,i)
+        extract(in_i,model_i,out_i)
+
+def extract(seq_path,model_path,out_path):
+    seq_dict=single.read_frame_feats(seq_path)
+    model=load_model(model_path)
+    extractor=Model(inputs=model.input,
+                outputs=model.get_layer("hidden").output)
+    feat_dict={name_i:extractor.predict(np.expand_dims(seq_i,axis=0)) 
+                    for name_i,seq_i in seq_dict.items()}
+    single.save_ts_feats(feat_dict,out_path)
 
 def get_data(data_dict):
     X,y=[],[]
