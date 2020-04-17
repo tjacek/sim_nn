@@ -34,7 +34,8 @@ def read_frame_feats(in_path):
             seq_i=np.loadtxt(path_i,delimiter=',')
         else:
             seq_i=np.load(path_i)
-        seq_dict[path_i.split('/')[-1]]=seq_i
+        name_i=files.clean_str(path_i.split('/')[-1])
+        seq_dict[name_i]=seq_i
     return seq_dict
 
 def save_ts_feats(feat_dict,out_path):
@@ -52,11 +53,15 @@ def save_ts_feats(feat_dict,out_path):
 def extract_frame_feats(frame_path,model_path,out_path=None):
     extractor=load_model(model_path)
     img_seqs=imgs.read_seqs(frame_path)
+    feat_dict=extractor_template(img_seqs,extractor)
+    save_frame_feats(feat_dict,out_path)
+
+def extractor_template(img_seqs,extractor):
     feats_seq={name_i:data.format_frames(seq_i)  
                 for name_i,seq_i in img_seqs.items()}
     feat_dict={name_i:extractor.predict(seq_i) 
                 for name_i,seq_i in feats_seq.items()}
-    save_frame_feats(feat_dict,out_path)
+    return feat_dict
 
 def save_frame_feats(feat_dict,out_path):
     files.make_dir(out_path)
@@ -65,9 +70,5 @@ def save_frame_feats(feat_dict,out_path):
         out_j=out_path+'/'+name_j
         np.save(out_j,seq_j)
 
-
-
-frame_path='../../sim3/time'
-model_path='../../sim3/ens3/models/nn0'
-#extract_frame_feats(frame_path,model_path,'test')
-#compute_feats('test','feats.txt')
+if __name__ == "__main__":
+    compute_ts_feats('test/seqs','test/basic.txt')
