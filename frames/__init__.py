@@ -5,32 +5,32 @@ from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D,Activation,Lambda
 from keras import regularizers
 import imgs,data,gen,single
-import sim#ts.models
+import sim,files#ts.models
 from keras.models import load_model
+
+def ens(in_path,out_path,n_epochs=5):
+    files.make_dir(out_path)
+    for i in range(20):
+        out_i='%s/nn%d'%(out_path,i)
+        make_model(in_path,out_i,n_epochs,cat_i=i)
 
 def extract(frame_path,model_path,out_path):
     frames=imgs.read_seqs(frame_path)
-#    X,y=data.to_seq_dataset(frames)
-#    names=list(frames.keys())
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
-#    X_feats=extractor.predict(X)
-#    feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
     feat_dict=single.extractor_template(frames,extractor)
     single.save_frame_feats(feat_dict,out_path)
 
-def make_model(in_path,out_path=None,n_epochs=5):
+def make_model(in_path,out_path=None,n_epochs=5,cat_i=0):
     frames=imgs.read_seqs(in_path)
     train,test=data.split_dict(frames)
     X,y=data.to_seq_dataset(train)
-#    y=[ int(name_i.split("_")[0])-1 for name_i in train.keys()]
-    X,y=gen.binary_data(X,y)
+    X,y=gen.binary_data(X,y,cat_i)
     print(len(y))
     n_channels=X[0].shape[-1]
     params={"input_shape":(64,64,n_channels)} 
     sim_metric,model=sim.build_siamese(params,make_five)
-#    make_five(20,n_channels,params=None)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):
         model.save(out_path)
