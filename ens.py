@@ -9,10 +9,11 @@ def train_template(fun,in_path,out_path,n_epochs=5):
 
 def extract_template(fun,frame_path,model_path,out_path):
     files.make_dir(out_path)
-    for in_i in files.top_files(model_path):
+    for in_i in files.top_files(frame_path):
+        model_i='%s/%s'%(model_path,in_i.split("/")[-1])
         out_i='%s/%s'%(out_path,in_i.split("/")[-1])
         print(in_i)
-        fun(frame_path,in_i,out_i)
+        fun(in_i,model_i,out_i)
 
 def transform_template(fun,in_path,out_path,info=None):
     files.make_dir(out_path)

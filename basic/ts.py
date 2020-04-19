@@ -10,26 +10,17 @@ import data,files,single,ens
 def ens_train(in_path,out_path,n_epochs=500):
     ens.transform_template(make_model,in_path,out_path,n_epochs)
 
-#    files.make_dir(out_path)
-#    for i,in_i in enumerate(files.top_files(in_path)):
-#        out_i='%s/nn%d' (out_path,i)
-#        make_model(in_i,out_i,n_epochs)
+def ens_extract(seq_path,model_path,out_path):
+    ens.extract_template(extract,seq_path,model_path,out_path)
 
 def make_model(in_path,out_path,n_epochs=5):
     seq_dict=single.read_frame_feats(in_path)
     train,test=data.split_dict(seq_dict)
-    X,y=get_data(seq_dict)
+    X,y=get_data(train)
     params={'n_cats':y.shape[1],'ts_len':X.shape[1],'n_feats':X.shape[2]}
     model=basic_model(params)
     model.fit(X,y,epochs=n_epochs,batch_size=64)
     model.save(out_path)
-
-def ens_extract(frame_path,model_path,feat_path):
-    files.make_dir(feat_path)
-    for i,in_i in enumerate(files.top_files(frame_path)):
-        out_i='%s/nn%d' % (feat_path,i)
-        model_i='%s/nn%d' % (model_path,i)
-        extract(in_i,model_i,out_i)
 
 def extract(seq_path,model_path,out_path):
     seq_dict=single.read_frame_feats(seq_path)
