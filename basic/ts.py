@@ -5,13 +5,15 @@ from keras.layers import Input,Dense, Dropout, Flatten,GlobalAveragePooling1D
 from keras.layers import Conv2D,Conv1D, MaxPooling1D,MaxPooling2D,Lambda
 from keras import regularizers
 from keras.models import load_model
-import data,files,single
+import data,files,single,ens
 
 def ens_train(in_path,out_path,n_epochs=500):
-    files.make_dir(out_path)
-    for i,in_i in enumerate(files.top_files(in_path)):
-        out_i='%s/nn%d' (out_path,i)
-        make_model(in_i,out_i,n_epochs)
+    ens.transform_template(make_model,in_path,out_path,n_epochs)
+
+#    files.make_dir(out_path)
+#    for i,in_i in enumerate(files.top_files(in_path)):
+#        out_i='%s/nn%d' (out_path,i)
+#        make_model(in_i,out_i,n_epochs)
 
 def make_model(in_path,out_path,n_epochs=5):
     seq_dict=single.read_frame_feats(in_path)
