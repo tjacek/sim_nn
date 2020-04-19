@@ -4,15 +4,15 @@ from keras.models import Model,Sequential
 from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D,Activation,Lambda
 from keras import regularizers
-import imgs,data,gen,single
+import imgs,data,gen,single,ens
 import sim,files#ts.models
 from keras.models import load_model
 
-def ens(in_path,out_path,n_epochs=5):
-    files.make_dir(out_path)
-    for i in range(20):
-        out_i='%s/nn%d'%(out_path,i)
-        make_model(in_path,out_i,n_epochs,cat_i=i)
+def ens_train(in_path,out_path,n_epochs=5):
+    ens.train_template(make_model,in_path,out_i,n_epochs)
+
+def ens_extract(frame_path,model_path,out_path):
+    ens.extract_template(extract,frame_path,model_path,out_path)
 
 def extract(frame_path,model_path,out_path):
     frames=imgs.read_seqs(frame_path)
