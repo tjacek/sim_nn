@@ -10,16 +10,16 @@ from keras.models import load_model
 def ens_train(in_path,out_path,n_epochs=5):
     ens.train_template(train_model,in_path,out_path,n_epochs)
 
-def extract(frame_path,model_path,out_path):
-    seq_dict=imgs.read_seqs(frame_path)
+def ens_extract(frame_path,model_path,out_path):
+    ens.transform_template(extract,model_path,out_path,frame_path)
+
+def extract(model_path,out_path,frame_path):
+    frames=imgs.read_seqs(frame_path)
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
-    frame_feat_dict={}
-    for name_i,seq_i in seq_dict.items():
-        seq_i=data.format_frames(seq_i)
-        frame_feat_dict[name_i]=extractor.predict(seq_i)
-    single.save_frame_feats(frame_feat_dict,out_path)
+    feat_dict=single.extractor_template(frames,extractor)
+    single.save_frame_feats(feat_dict,out_path)
 
 def train_model(in_path,out_path,n_epochs=5,cat_i=0):
     frames=imgs.read_seqs(in_path)
