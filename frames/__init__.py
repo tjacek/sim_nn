@@ -12,9 +12,9 @@ def ens_train(in_path,out_path,n_epochs=5):
     ens.train_template(make_model,in_path,out_i,n_epochs)
 
 def ens_extract(frame_path,model_path,out_path):
-    ens.extract_template(extract,frame_path,model_path,out_path)
+    ens.transform_template(extract,model_path,out_path,frame_path)
 
-def extract(frame_path,model_path,out_path):
+def extract(model_path,out_path,frame_path):
     frames=imgs.read_seqs(frame_path)
     model=load_model(model_path)
     extractor=Model(inputs=model.input,

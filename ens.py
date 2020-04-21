@@ -8,6 +8,7 @@ def train_template(fun,in_path,out_path,n_epochs=5):
         fun(in_path,out_i,n_epochs,cat_i=i)
 
 def extract_template(fun,frame_path,model_path,out_path):
+    raise Exception(frame_path)
     files.make_dir(out_path)
     for in_i in files.top_files(frame_path):
         model_i='%s/%s'%(model_path,in_i.split("/")[-1])
