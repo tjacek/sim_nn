@@ -38,15 +38,6 @@ def clean_name(action_i):
     raw=[s_i.lstrip("0") for s_i in re.findall(r'\d+',name_i)]
     return "_".join(raw)
 
-def to_dataset(names,img_seq):
-    X,y=[],[]
-    for name_i in names:
-        cat_i=parse_name(name_i)[0]-1
-        for frame_j in img_seq[name_i]:
-            X.append(frame_j)
-            y.append(cat_i)
-    return X,y
-
 def get_params(X,y):
     return count_cats(y),count_channels(X) 
 
@@ -70,4 +61,14 @@ def to_seq_dataset(seq_dict):
         seq_i=format_frames(seq_dict[name_i])
         X.append(seq_i)
         y.append(cat_i)
+    return X,y
+
+def to_frame_dataset(seq_dict):
+    X,y=[],[]
+    for name_i in seq_dict.keys():
+        cat_i=parse_name(name_i)[0]-1
+        seq_i=format_frames(seq_dict[name_i])
+        for frame_j in seq_i:
+            X.append(frame_j)
+            y.append(cat_i)
     return X,y
