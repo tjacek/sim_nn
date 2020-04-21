@@ -1,30 +1,6 @@
 import numpy as np
 from keras.models import load_model
-import scipy.stats
 import imgs,data,files
-
-def compute_ts_feats(in_path,out_path):
-    data_dict=read_frame_feats(in_path)
-    feat_dict={ name_i:feat_vector(seq_i)
-                    for name_i,seq_i in data_dict.items()}
-    save_ts_feats(feat_dict,out_path)
-
-def feat_vector(seq_j):
-    feats=[]
-    for ts_k in seq_j.T:
-    	feats+=EBTF(ts_k)
-    return np.array(feats)
-
-def EBTF(feat_i):
-    if(np.all(feat_i==0)):
-        return [0.0,0.0,0.0,0.0]
-    return [np.mean(feat_i),np.std(feat_i),
-    	                scipy.stats.skew(feat_i),time_corl(feat_i)]
-
-def time_corl(feat_i):
-    n_size=feat_i.shape[0]
-    x_i=np.arange(float(n_size),step=1.0)
-    return scipy.stats.pearsonr(x_i,feat_i)[0]
 
 def read_frame_feats(in_path):
     seq_dict={}
