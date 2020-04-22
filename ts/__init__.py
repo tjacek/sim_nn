@@ -2,7 +2,7 @@ import numpy as np
 import keras
 from keras.models import load_model
 import single,data,norm,files
-import gen,ts.models
+import gen,ts.models,ens
 
 def ens_extract(frame_path,model_path,out_path=None):  
     files.make_dir(out_path)
@@ -19,15 +19,16 @@ def extract(frame_path,model_path,out_path):
     single.save_ts_feats(feat_dict,out_path)
 
 def ens_train(in_path,out_path,n_epochs=5):
-    files.make_dir(out_path)
-    for i,in_i in enumerate(files.top_files(in_path)):
-        out_i="%s/nn%d"%(out_path,i)
-        make_model(in_i,out_i,n_epochs)
+    ens.transform_template(make_model,in_path,out_path,n_epochs)
+#    files.make_dir(out_path)
+#    for i,in_i in enumerate(files.top_files(in_path)):
+#        out_i="%s/nn%d"%(out_path,i)
+#        make_model(in_i,out_i,n_epochs)
 
-def make_model(in_path,out_path=None,n_epochs=5):
+def make_model(in_path,out_path=None,n_epochs=5,cat_i=None):
     (X_train,y_train),test,params=load_data(in_path,split=True)
-    print(params['n_cats'])
     X,y=gen.full_data(X_train,y_train)
+#    raise Exception(len(X[0]))
     sim_metric,model=ts.models.make_model(params)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):

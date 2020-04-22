@@ -3,7 +3,7 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 print("physical_devices-------------", len(physical_devices))
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import os.path 
-import files,stats,spline,basic.ts
+import files,stats,spline,basic.ts,ts
 
 def stats_feats(in_path):
     dir_path=os.path.dirname(in_path)
@@ -22,4 +22,13 @@ def basic_feats(in_path,n_epochs=1000):
     feat_path=dir_path+"/feats"
     basic.ts.ens_extract(spline_path,model_path,feat_path)
 
-basic_feats("../ens2/seqs")
+def sim_feats(in_path,n_epochs=1000):
+    dir_path=os.path.dirname(in_path)
+    dir_path+="/sim"
+    files.make_dir(dir_path)
+    spline_path= dir_path+"/spline"
+    spline.ens_upsample(in_path,spline_path)
+    model_path= dir_path+"/models"
+    ts.ens_train(spline_path,model_path,n_epochs)
+
+sim_feats("../ens2/seqs",5)
