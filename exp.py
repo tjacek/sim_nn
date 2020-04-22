@@ -1,5 +1,9 @@
+import tensorflow as tf
+physical_devices = tf.config.experimental.list_physical_devices('GPU')
+print("physical_devices-------------", len(physical_devices))
+tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import os.path 
-import files,stats
+import files,stats,spline,basic.ts
 
 def stats_feats(in_path):
     dir_path=os.path.dirname(in_path)
@@ -7,5 +11,15 @@ def stats_feats(in_path):
     files.make_dir(dir_path)
     stats.ens_stats(in_path,dir_path+"/feats")
 
+def basic_feats(in_path,n_epochs=1000):
+    dir_path=os.path.dirname(in_path)
+    dir_path+="/basic"
+    files.make_dir(dir_path)
+    spline_path= dir_path+"/spline"
+    spline.ens_upsample(in_path,spline_path)
+    model_path= dir_path+"/models"
+    basic.ts.ens_train(spline_path,model_path,n_epochs)
+    feat_path=dir_path+"/feats"
+    basic.ts.ens_extract(spline_path,model_path,feat_path)
 
-stats_feats("../ens2/ts/seqs")
+basic_feats("../ens2/seqs")

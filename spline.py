@@ -34,4 +34,5 @@ def upsample(in_path,out_path,size=64):
     seq_dict={ name_i:spline(seq_i) for name_i,seq_i in seq_dict.items()}
     single.save_frame_feats(seq_dict,out_path)
 
-ens_upsample("../ens/seqs",'../ens/spline')
+if __name__ == "__main__":
+    ens_upsample("../ens/seqs",'../ens/spline')
