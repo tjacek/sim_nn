@@ -4,20 +4,21 @@ from keras.models import Model,Sequential
 from keras.layers import Input, Dense,Conv2D,Reshape,Conv2DTranspose
 from keras.layers import Flatten,MaxPooling2D,UpSampling2D
 from keras.models import load_model
-import imgs,data
+import imgs,data,single
 
 def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
     frames=imgs.read_seqs(in_path)
     train,test=data.split_dict(frames)
     X,y=data.to_frame_dataset(train)
     X=np.array(X)
+    add_noise(X)
     params={'n_channels':X.shape[-1]}
-    model,recon=make_autoencoder(params)
+    model,auto=make_autoencoder(params)
     model.summary()
     model.fit(X,X,epochs=n_epochs,batch_size=256)
-    model.save(out_path)
+    auto.save(out_path)
     if(recon):
-        recon.save(out_path+"_recon")
+        model.save(out_path+"_recon")
 
 def make_autoencoder(params):
     input_img = Input(shape=(64, 64, params['n_channels']))
@@ -56,15 +57,13 @@ def reconstruct(in_path,model_path,out_path=None,diff=False):
         rec_frames[name_i]=rec_seq_i
     imgs.save_seqs(rec_frames,out_path)
 
-#def extract_feats(in_path,model_path,out_path=None):
-#    if(not out_path):
-#        out_path=os.path.split(in_path)[0]+'/ae_feats'
-#    model=load_model(model_path)
-#    seq_dict=imgs.read_seqs(in_path) 
-#    feat_dict=extract.frame_features(seq_dict,model)
-#    extract.save_seqs(feat_dict,out_path)
+def extract(in_path,model_path,out_path=None):
+    model=load_model(model_path)
+    seq_dict=imgs.read_seqs(in_path)
+    feat_dict=single.extractor_template(seq_dict,model)
+    single.save_frame_feats(feat_dict,out_path)
 
-#def add_noise(X):
-#    std=0.25*np.mean(X)
-#    noise = np.random.normal(loc=0.0, scale=std, size=X.shape)
-#    return X+noise
+def add_noise(X):
+    std=0.25*np.mean(X)
+    noise = np.random.normal(loc=0.0, scale=std, size=X.shape)
+    return X+noise
