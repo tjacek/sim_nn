@@ -3,6 +3,7 @@ import keras.backend as K
 from keras.models import Model,Sequential
 from keras.layers import Input, Dense,Conv2D,Reshape,Conv2DTranspose
 from keras.layers import Flatten,MaxPooling2D,UpSampling2D
+from keras.models import load_model
 import imgs,data
 
 def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
@@ -42,20 +43,18 @@ def make_autoencoder(params):
                       loss='mean_squared_error')
     return autoencoder,recon
 
-       	
-#def reconstruct(in_path,model_path,out_path=None,diff=False):
-#    model=load_model(model_path)
-#    if(not out_path):
-#        out_path=os.path.split(in_path)[0]+'/rec'	
-#    def rec_helper(X):
-#        X=np.array(X)
-#        X=data.format_frames(X)
-#        pred= model.predict(X)
-#        if(diff):            	
-#            pred=np.abs(pred-X)
-#        pred=  [np.vstack(frame_i.T) for frame_i in pred]
-#        return pred   
-#    imgs.transform(in_path,out_path,rec_helper,False)
+def reconstruct(in_path,model_path,out_path=None,diff=False):
+    frames=imgs.read_seqs(in_path)
+    model=load_model(model_path)
+    frames={ name_i:data.format_frames(seq_i)
+                for name_i,seq_i in frames.items()}
+    rec_frames={}
+    for name_i,seq_i in frames.items():
+        rec_seq_i=model.predict(seq_i)
+        rec_seq_i=  [np.vstack(frame_j.T) 
+                        for frame_j in rec_seq_i]
+        rec_frames[name_i]=rec_seq_i
+    imgs.save_seqs(rec_frames,out_path)
 
 #def extract_feats(in_path,model_path,out_path=None):
 #    if(not out_path):
