@@ -5,11 +5,7 @@ import single,data,norm,files
 import gen,ts.models,ens
 
 def ens_extract(frame_path,model_path,out_path=None):  
-    files.make_dir(out_path)
-    for i,in_i in enumerate(files.top_files(model_path)):
-        out_i="%s/nn%d"%(out_path,i)
-        frame_i="%s/nn%d"%(frame_path,i)
-        extract(frame_i,in_i,out_i)
+    ens.extract_template(extract,frame_path,model_path,out_path)
 
 def extract(frame_path,model_path,out_path):
     (X,y),names=load_data(frame_path,split=False)
@@ -20,15 +16,10 @@ def extract(frame_path,model_path,out_path):
 
 def ens_train(in_path,out_path,n_epochs=5):
     ens.transform_template(make_model,in_path,out_path,n_epochs)
-#    files.make_dir(out_path)
-#    for i,in_i in enumerate(files.top_files(in_path)):
-#        out_i="%s/nn%d"%(out_path,i)
-#        make_model(in_i,out_i,n_epochs)
 
 def make_model(in_path,out_path=None,n_epochs=5,cat_i=None):
     (X_train,y_train),test,params=load_data(in_path,split=True)
     X,y=gen.full_data(X_train,y_train)
-#    raise Exception(len(X[0]))
     sim_metric,model=ts.models.make_model(params)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):

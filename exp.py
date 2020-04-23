@@ -30,5 +30,7 @@ def sim_feats(in_path,n_epochs=1000):
     spline.ens_upsample(in_path,spline_path)
     model_path= dir_path+"/models"
     ts.ens_train(spline_path,model_path,n_epochs)
+    feat_path=dir_path+"/feats"
+    ts.ens_extract(spline_path,model_path,feat_path)
 
-sim_feats("../ens2/seqs",5)
+sim_feats("../ens2/seqs",300)
