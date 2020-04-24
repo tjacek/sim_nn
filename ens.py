@@ -10,7 +10,7 @@ def train_template(fun,in_path,out_path,n_epochs=5):
         fun(in_path,out_i,n_epochs,i)
 
 def extract_template(fun,frame_path,model_path,out_path):
-    if(not is_ens( model_path)):
+    if(not is_ens( frame_path)):
         return fun(frame_path,model_path,out_path)
     files.make_dir(out_path)
     for in_i in files.top_files(frame_path):
@@ -33,5 +33,6 @@ def transform_template(fun,in_path,out_path,info=None):
 def is_ens(in_path):
     if(not os.path.isdir(in_path)):
         return False
-    return any([  os.path.isdir(file_i)  
-                    for file_i in  files.top_files(in_path)] )
+    result=[  os.path.isdir(file_i)  
+                    for file_i in  files.top_files(in_path)]
+    return any(result)

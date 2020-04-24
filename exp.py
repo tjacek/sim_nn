@@ -29,9 +29,9 @@ def sim_feats(in_path,n_epochs=1000):
     dir_path+="/sim"
     files.make_dir(dir_path)
     spline_path= dir_path+"/spline"
-#    spline.ens_upsample(in_path,spline_path)
+    spline.ens_upsample(in_path,spline_path)
     model_path= dir_path+"/models"
-#    ts.ens_train(spline_path,model_path,n_epochs)
+    ts.ens_train(spline_path,model_path,n_epochs)
     feat_path=dir_path+"/feats"
     ts.ens_extract(spline_path,model_path,feat_path)
 
@@ -42,4 +42,4 @@ def ae_seqs(in_path,n_epochs=1000):
     frames.ae.make_model(in_path,ae_path,n_epochs)
     frames.ae.extract(in_path,ae_path,seq_path)
 
-sim_feats("../proj/seqs",1000)
+basic_feats("../ens2/seqs",1000)
