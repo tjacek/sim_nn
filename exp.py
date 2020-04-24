@@ -42,4 +42,4 @@ def ae_seqs(in_path,n_epochs=1000):
     frames.ae.make_model(in_path,ae_path,n_epochs)
     frames.ae.extract(in_path,ae_path,seq_path)
 
-ae_seqs("../proj/full",1000)
+basic_feats("../proj/seqs",1000)
