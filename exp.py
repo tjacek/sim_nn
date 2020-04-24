@@ -3,7 +3,9 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 print("physical_devices-------------", len(physical_devices))
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import os.path 
-import files,stats,spline,basic.ts,ts
+import files,stats,spline
+import basic.ts,ts,frames.ae
+
 
 def stats_feats(in_path):
     dir_path=os.path.dirname(in_path)
@@ -33,4 +35,11 @@ def sim_feats(in_path,n_epochs=1000):
     feat_path=dir_path+"/feats"
     ts.ens_extract(spline_path,model_path,feat_path)
 
-sim_feats("../ens2/seqs",300)
+def ae_seqs(in_path,n_epochs=1000):
+    dir_path=os.path.dirname(in_path)
+    ae_path=dir_path+  "/ae"
+    seq_path=dir_path+ "/seqs"
+    frames.ae.make_model(in_path,ae_path,n_epochs)
+    frames.ae.extract(in_path,ae_path,seq_path)
+
+ae_seqs("../proj/full",1000)
