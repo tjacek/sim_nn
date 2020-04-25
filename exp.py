@@ -6,7 +6,6 @@ import os.path
 import files,stats,spline
 import basic.ts,ts,frames.ae
 
-
 def stats_feats(in_path):
     dir_path=os.path.dirname(in_path)
     dir_path+="/stats"
@@ -42,4 +41,13 @@ def ae_seqs(in_path,n_epochs=1000):
     frames.ae.make_model(in_path,ae_path,n_epochs)
     frames.ae.extract(in_path,ae_path,seq_path)
 
-basic_feats("../ens2/seqs",1000)
+def sim_seqs(in_path,n_epochs=400):
+    dir_path=os.path.dirname(in_path)
+    model_path=dir_path+  "/frame_models"
+#    files.make_dir(model_path)
+    seq_path=dir_path +"/seqs"
+#    files.make_dir(seq_path)
+    frames.ens_train(in_path,model_path,n_epochs)
+    frames.ens_extract(in_path,model_path,seq_path)
+
+sim_seqs("../ens3/tmp",400)

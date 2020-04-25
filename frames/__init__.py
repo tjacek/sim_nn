@@ -9,10 +9,11 @@ import sim,files#ts.models
 from keras.models import load_model
 
 def ens_train(in_path,out_path,n_epochs=5):
-    ens.train_template(make_model,in_path,out_i,n_epochs)
+    ens.train_template(make_model,in_path,out_path,n_epochs)
 
 def ens_extract(frame_path,model_path,out_path):
-    ens.transform_template(extract,model_path,out_path,frame_path)
+#    raise Exception((model_path,out_path,frame_path))
+    ens.transform_template(extract,model_path,out_path,frame_path,False)
 
 def extract(model_path,out_path,frame_path):
     frames=imgs.read_seqs(frame_path)
