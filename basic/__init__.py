@@ -11,7 +11,7 @@ def ens_train(in_path,out_path,n_epochs=5):
     ens.train_template(train_model,in_path,out_path,n_epochs)
 
 def ens_extract(frame_path,model_path,out_path):
-    ens.transform_template(extract,model_path,out_path,frame_path)
+    ens.transform_template(extract,model_path,out_path,frame_path,dir_ensemble=False)
 
 def extract(model_path,out_path,frame_path):
     frames=imgs.read_seqs(frame_path)
