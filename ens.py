@@ -22,14 +22,22 @@ def extract_template(fun,frame_path,model_path,out_path):
 
 def transform_template(fun,in_path,out_path,info=None,dir_ensemble=True):
     if(not is_ens( in_path) and dir_ensemble):
-        return fun(in_path,out_path,info)
+        return apply_fun(fun,in_path,out_path,info)
+#        return fun(in_path,out_path,info)
     files.make_dir(out_path)
     for in_i in files.top_files(in_path):
         out_i='%s/%s'%(out_path,in_i.split("/")[-1])
-        if(info):
-            fun(in_i,out_i,info)
-        else:
-            fun(in_i,out_i)
+        apply_fun(fun,in_i,out_i,info)
+#        if(info):
+#            fun(in_i,out_i,info)
+#        else:
+#            fun(in_i,out_i)
+
+def apply_fun(fun,in_i,out_i,info):
+    if(info):
+        fun(in_i,out_i,info)
+    else:
+        fun(in_i,out_i)
 
 def is_ens(in_path):
     if(not os.path.isdir(in_path)):

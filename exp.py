@@ -4,7 +4,7 @@ print("physical_devices-------------", len(physical_devices))
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 import os.path 
 import files,stats,spline
-import basic.ts,ts,frames.ae
+import basic,basic.ts,ts,frames.ae
 
 def stats_feats(in_path):
     dir_path=os.path.dirname(in_path)
@@ -23,7 +23,7 @@ def basic_feats(in_path,n_epochs=1000):
     feat_path=dir_path+"/feats"
     basic.ts.ens_extract(spline_path,model_path,feat_path)
 
-def sim_feats(in_path,n_epochs=1000):
+def sim_feats(in_path,n_epochs=350):
     dir_path=os.path.dirname(in_path)
     dir_path+="/sim"
     files.make_dir(dir_path)
@@ -41,13 +41,20 @@ def ae_seqs(in_path,n_epochs=1000):
     frames.ae.make_model(in_path,ae_path,n_epochs)
     frames.ae.extract(in_path,ae_path,seq_path)
 
-def sim_seqs(in_path,n_epochs=400):
+def sim_seqs(in_path,n_epochs=350):
     dir_path=os.path.dirname(in_path)
     model_path=dir_path+  "/frame_models"
-#    files.make_dir(model_path)
     seq_path=dir_path +"/seqs"
-#    files.make_dir(seq_path)
     frames.ens_train(in_path,model_path,n_epochs)
     frames.ens_extract(in_path,model_path,seq_path)
 
-sim_seqs("../ens3/tmp",400)
+def basic_seqs(in_path,n_epochs=1000):
+    dir_path=os.path.dirname(in_path)
+    model_path=dir_path+  "/frame_models"
+    seq_path=dir_path +"/seqs"
+    basic.ens_train(in_path,model_path,n_epochs)
+    basic.ens_extract(in_path,model_path,seq_path)
+
+#basic_seqs("../ens4/tmp",1000)
+#ae_seqs("../time/time",n_epochs=1000)
+basic_feats("../time/seqs")#,n_epochs=350)
