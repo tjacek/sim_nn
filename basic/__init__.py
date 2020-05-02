@@ -13,8 +13,12 @@ def ens_train(in_path,out_path,n_epochs=5):
 def ens_extract(frame_path,model_path,out_path):
     ens.transform_template(extract,model_path,out_path,frame_path,dir_ensemble=False)
 
+def full_train(in_path,out_path,n_epochs=5):
+    train_model(in_path,out_path,n_epochs,cat_i=None)
+
 def extract(model_path,out_path,frame_path):
     frames=imgs.read_seqs(frame_path)
+#    raise Exception( (model_path,out_path,frame_path))
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
@@ -26,9 +30,11 @@ def train_model(in_path,out_path,n_epochs=5,cat_i=0):
     train,test=data.split_dict(frames)
     X,y=data.to_frame_dataset(train)
     X=np.array(X)
-    y=[int(y_i==cat_i) for y_i in y]
+    if(type(cat_i)==int):
+        y=[int(y_i==cat_i) for y_i in y]
     y=keras.utils.to_categorical(y)
-    n_cats,n_channels=2,X[0].shape[-1]
+    n_cats= 2 if(type(cat_i)==int) else y.shape[-1]
+    n_channels=X[0].shape[-1]
     model=make_model(n_cats,n_channels)
     model.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):
@@ -50,18 +56,3 @@ def make_model(n_cats,n_channels): #,params=None):
               optimizer=keras.optimizers.SGD(lr=0.001,  momentum=0.9, nesterov=True))
     model.summary()
     return model
-
-#def sample_seq(frames,size=5):
-#    n_frames=len(frames)
-#    dist=get_dist(n_frames)
-#    def sample(n):   
-#        return np.random.choice(np.arange(n_frames),n,p=dist)
-#    return sample(size)
-
-#def get_dist(n):
-#    inc,dec=np.arange(n),np.flip(np.arange(n))
-#    dist=np.amin(np.array([inc,dec]),axis=0)
-#    dist=dist.astype(float)
-#    dist=dist**2
-#    dist/=np.sum(dist)
-#    return dist
