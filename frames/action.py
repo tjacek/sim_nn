@@ -1,9 +1,22 @@
 import keras.utils
+from keras.models import load_model
+from keras.models import Model
 import numpy as np
-import data,imgs
+import data,imgs,single
 import frames,sim,gen
 
-def action_img(in_path,out_path,n_epochs=5):
+def extract(frame_path,model_path,out_path):	
+    action_frames=imgs.read_frames(frame_path,True)
+    model=load_model(model_path)
+    extractor=Model(inputs=model.input,
+                outputs=model.get_layer("hidden").output)
+    X=data.format_frames(list(action_frames.values()))
+    X_feats=model.predict(X)
+    names=list(action_frames.keys())
+    feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
+    single.save_ts_feats(feat_dict,out_path)
+
+def make_model(in_path,out_path,n_epochs=5):
     action_frames=imgs.read_frames(in_path,True)
     train,test=data.split_dict(action_frames)
     X=data.format_frames(list(train.values())) 
