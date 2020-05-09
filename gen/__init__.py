@@ -1,12 +1,12 @@
 import numpy as np
 
-def binary_data(X_old,y_old,binary_cat=0):
+def binary_data(X_old,y_old,binary_cat=0,n_samples=3):
     X,y=[],[]
     for i,y_i in enumerate(y_old):
         if(y_i==binary_cat):
             x_i=X_old[i]
             for j,x_j in enumerate(X_old):
-                X_ij,y_ij=make_pairs(x_i,x_j,y_i,y_old[j])
+                X_ij,y_ij=make_pairs(x_i,x_j,y_i,y_old[j],n_samples)
                 X+=X_ij
                 y+=y_ij
     X,y=np.array(X),np.array(y)

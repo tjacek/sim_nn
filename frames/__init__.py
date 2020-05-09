@@ -23,11 +23,11 @@ def extract(model_path,out_path,frame_path):
     feat_dict=single.extractor_template(frames,extractor)
     single.save_frame_feats(feat_dict,out_path)
 
-def make_model(in_path,out_path=None,n_epochs=5,cat_i=0):
+def make_model(in_path,out_path=None,n_epochs=5,cat_i=0,n_samples=10):#3
     frames=imgs.read_seqs(in_path)
     train,test=data.split_dict(frames)
     X,y=data.to_seq_dataset(train)
-    X,y=gen.binary_data(X,y,cat_i)
+    X,y=gen.binary_data(X,y,cat_i,n_samples)
     print(len(y))
     n_channels=X[0].shape[-1]
     params={"input_shape":(64,64,n_channels)} 

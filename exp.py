@@ -36,6 +36,7 @@ def ae_seqs(in_path,n_epochs=1000):
     frames.ae.extract(in_path,paths["ae"],paths["seqs"])
 
 def sim_seqs(in_path,n_epochs=350):
+    paths=prepare_dirs(in_path,None,["frame_models","seqs"])
     frames.ens_train(in_path,paths["frame_models"],n_epochs)
     frames.ens_extract(in_path,paths["frame_models"],paths["seqs"])
 
@@ -61,5 +62,5 @@ def get_paths(dir_path,sufixes):
     return {sufix_i:"%s/%s"%(dir_path,sufix_i) for sufix_i in sufixes }
 
 #ae_seqs("../proj2/full",n_epochs=1500)
-#basic_seqs("../ens6/tmp",1000)
-sim_feats("sim/full",5)
+sim_seqs("../ens_sim/tmp",350)
+#sim_feats("sim/full",5)
