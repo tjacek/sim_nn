@@ -25,7 +25,7 @@ def extract(model_path,out_path,frame_path):
 def make_model(in_path,out_path=None,n_epochs=5,cat_i=0,n_samples=3):#3
     def gen_helper(X,y):
         return gen.binary_data(X,y,cat_i,n_samples)
-    make_sim_template(in_path,out_path,n_epochs,gen_pairs)
+    make_sim_template(in_path,out_path,n_epochs,gen_helper)
 
 def make_sim_template(in_path,out_path,n_epochs,gen_pairs):
     frames=imgs.read_seqs(in_path)
