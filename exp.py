@@ -14,7 +14,7 @@ def basic_feats(in_path,n_epochs=1000):
     paths=prepare_dirs(in_path,"basic",["spline","models","feats"])
     spline.ens_upsample(in_path,paths["spline"])
     basic.ts.ens_train(paths["spline"],paths["models"],n_epochs)
-    basic.ts.ens_extract(paths["spline"],paths["models"],paths["feat"])
+    basic.ts.ens_extract(paths["spline"],paths["models"],paths["feats"])
 
 def agum_feats(in_path,n_epochs=1000):
     paths=prepare_dirs(in_path,"agum",["spline","agum_seqs","models","feats"])
@@ -62,5 +62,8 @@ def get_paths(dir_path,sufixes):
     return {sufix_i:"%s/%s"%(dir_path,sufix_i) for sufix_i in sufixes }
 
 #ae_seqs("../proj2/full",n_epochs=1500)
-sim_seqs("../ens_sim/tmp",350)
+#sim_seqs("../ens_sim/tmp",350)
+#stats_feats("../ens_sim/seqs")
+basic_feats("../ens_sim/seqs",1000)
+
 #sim_feats("sim/full",5)
