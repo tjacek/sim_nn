@@ -12,7 +12,6 @@ def ens_train(in_path,out_path,n_epochs=5):
     ens.train_template(make_model,in_path,out_path,n_epochs)
 
 def ens_extract(frame_path,model_path,out_path):
-#    raise Exception((model_path,out_path,frame_path))
     ens.transform_template(extract,model_path,out_path,frame_path,False)
 
 def extract(model_path,out_path,frame_path):
@@ -23,18 +22,22 @@ def extract(model_path,out_path,frame_path):
     feat_dict=single.extractor_template(frames,extractor)
     single.save_frame_feats(feat_dict,out_path)
 
-def make_model(in_path,out_path=None,n_epochs=5,cat_i=0,n_samples=10):#3
+def make_model(in_path,out_path=None,n_epochs=5,cat_i=0,n_samples=3):#3
+    def gen_helper(X,y):
+        return gen.binary_data(X,y,cat_i,n_samples)
+    make_sim_template(in_path,out_path,n_epochs,gen_pairs)
+
+def make_sim_template(in_path,out_path,n_epochs,gen_pairs):
     frames=imgs.read_seqs(in_path)
     train,test=data.split_dict(frames)
     X,y=data.to_seq_dataset(train)
-    X,y=gen.binary_data(X,y,cat_i,n_samples)
-    print(len(y))
+    X,y=gen_pairs(X,y) #gen.binary_data(X,y,cat_i,n_samples)
     n_channels=X[0].shape[-1]
     params={"input_shape":(64,64,n_channels)} 
     sim_metric,model=sim.build_siamese(params,make_five)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):
-        model.save(out_path)
+        model.save(out_path)    
 
 def make_five(model):
     activ='relu'
