@@ -15,7 +15,7 @@ def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
     params={'n_channels':X.shape[-1]}
     model,auto=make_autoencoder(params)
     model.summary()
-    model.fit(X,X,epochs=n_epochs,batch_size=256)
+    model.fit(X,X,epochs=n_epochs,batch_size=64)
     auto.save(out_path)
     if(recon):
         model.save(out_path+"_recon")

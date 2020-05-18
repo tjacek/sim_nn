@@ -25,5 +25,6 @@ def sample_blocks(seq_i,k):
     new_seq_j=np.concatenate(blocks,axis=0)
     return new_seq_j
 
-path_i="../ens5/basic/spline"
-ens_agum(path_i,"agum_ens")
+if __name__=="__main__":
+    path_i="../ens5/basic/spline"
+    ens_agum(path_i,"agum_ens")
