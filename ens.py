@@ -2,8 +2,6 @@ import os.path
 import single,files,basic
 
 def train_template(fun,in_path,out_path,n_epochs=5):
-#    if(not is_ens( in_path)):
-#        return fun(in_path,out_path,n_epochs)
     files.make_dir(out_path)
     for i in range(20):
         out_i='%s/nn%d'%(out_path,i)
@@ -23,15 +21,10 @@ def extract_template(fun,frame_path,model_path,out_path):
 def transform_template(fun,in_path,out_path,info=None,dir_ensemble=True):
     if(not is_ens( in_path) and dir_ensemble):
         return apply_fun(fun,in_path,out_path,info)
-#        return fun(in_path,out_path,info)
     files.make_dir(out_path)
     for in_i in files.top_files(in_path):
         out_i='%s/%s'%(out_path,in_i.split("/")[-1])
         apply_fun(fun,in_i,out_i,info)
-#        if(info):
-#            fun(in_i,out_i,info)
-#        else:
-#            fun(in_i,out_i)
 
 def apply_fun(fun,in_i,out_i,info):
     if(info):
