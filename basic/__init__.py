@@ -18,7 +18,6 @@ def full_train(in_path,out_path,n_epochs=5):
 
 def extract(model_path,out_path,frame_path):
     frames=imgs.read_seqs(frame_path)
-#    raise Exception( (model_path,out_path,frame_path))
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
@@ -40,7 +39,7 @@ def train_model(in_path,out_path,n_epochs=5,cat_i=0):
     if(out_path):
         model.save(out_path)
 
-def make_model(n_cats,n_channels): #,params=None):
+def make_model(n_cats,n_channels):
     input_img = Input(shape=(64, 64, n_channels))
     x=input_img
     kern_size,pool_size,filters=(3,3),(2,2),[32,16,16,16]
