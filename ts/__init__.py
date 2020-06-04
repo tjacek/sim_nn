@@ -20,8 +20,19 @@ def ens_train(in_path,out_path,n_epochs=5):
 def make_model(in_path,out_path=None,n_epochs=5,cat_i=None):
     (X_train,y_train),test,params=load_data(in_path,split=True)
     X,y=gen.full_data(X_train,y_train)
+    raise Exception(y.shape)
     sim_metric,model=ts.models.make_model(params)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
+    if(out_path):
+        model.save(out_path)
+
+def make_binary_model(in_path,out_path=None,n_epochs=5,cat_i=None):
+    (X_train,y_train),test,params=load_data(in_path,split=True)
+    y=y_train[:,cat_i]
+    y=keras.utils.to_categorical(y)
+    X,y=gen.full_data(X_train,y)
+    sim_metric,model=ts.models.make_model(params)
+    sim_metric.fit(X,y,epochs=n_epochs,batch_size=64)
     if(out_path):
         model.save(out_path)
 
