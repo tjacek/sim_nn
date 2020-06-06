@@ -5,6 +5,7 @@ from keras.layers import Input, Dense,Conv2D,Reshape,Conv2DTranspose
 from keras.layers import Flatten,MaxPooling2D,UpSampling2D
 from keras.models import load_model
 import imgs,data,single
+from keras import regularizers
 
 def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
     frames=imgs.read_seqs(in_path)
@@ -29,7 +30,7 @@ def make_autoencoder(params):
     x = MaxPooling2D((2, 2))(x)
     shape = K.int_shape(x)
     x=Flatten()(x)
-    encoded=Dense(100)(x)    
+    encoded=Dense(100,name='hidden',kernel_regularizer=regularizers.l1(0.01))(x)    
     x = Dense(shape[1]*shape[2]*shape[3])(encoded)
     x = Reshape((shape[1], shape[2], shape[3]))(x)
     x = UpSampling2D((2, 2))(x)
@@ -39,9 +40,10 @@ def make_autoencoder(params):
     
     x=Conv2DTranspose(filters=params['n_channels'],kernel_size=n_kerns,padding='same')(x)
     recon=Model(input_img,encoded)
-    autoencoder = Model(input_img, x) 
-    autoencoder.compile(optimizer='adam',#keras.optimizers.SGD(lr=0.0001,  momentum=0.9, nesterov=True), 
-                      loss='mean_squared_error')
+    autoencoder = Model(input_img, x)
+
+    autoencoder.compile(optimizer='adam',
+                      loss='mean_squared_error')#CustomLoss(autoencoder)
     return autoencoder,recon
 
 def reconstruct(in_path,model_path,out_path=None,diff=False):
@@ -67,3 +69,20 @@ def add_noise(X):
     std=0.25*np.mean(X)
     noise = np.random.normal(loc=0.0, scale=std, size=X.shape)
     return X+noise
+
+class CustomLoss(object):
+    def __init__(self,model):
+        self.model=model
+
+    def __call__(self,y_pred, y_true, sample_weight=None):
+        mse = K.mean(K.square(y_true - y_pred), axis=1)
+        lam = 1e-4
+        W = K.variable(value=self.model.get_layer('hidden').get_weights()[0])  # N x N_hidden
+        W = K.transpose(W)  # N_hidden x N
+        h = self.model.get_layer('hidden').output
+        dh = h * (1 - h)  # N_batch x N_hidden
+
+        # N_batch x N_hidden * N_hidden x 1 = N_batch x 1
+        contractive = lam * K.sum(dh**2 * K.sum(W**2, axis=1), axis=1)
+        raise Exception(y_pred.shape)
+        return mse #+ contractive
