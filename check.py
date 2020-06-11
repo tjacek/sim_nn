@@ -1,6 +1,7 @@
+import numpy as np
 from keras.models import load_model
 from keras.models import load_model
-import files
+import files,imgs
 
 def check_model(in_path):
     model_path= in_path+"/frame_models"
@@ -8,4 +9,10 @@ def check_model(in_path):
     model=load_model(paths[0])
     model.summary()
 
-check_model("../ens6")
+def get_proportion(in_path):
+    img_seq=imgs.read_seqs(in_path)
+    dims=[seq_i[0].shape for seq_i in img_seq.values()]
+    prop=[ dim_i[0]/dim_i[1] for dim_i in dims]
+    print("mean%s median%s" % (np.mean(prop),np.median(prop)))
+
+get_proportion("../agum/box")
