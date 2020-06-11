@@ -1,30 +1,16 @@
-import numpy as np
-import single,data,ens
+import frames.ae
+import imgs,files,exp
 
-def ens_agum(in_path,out_path):
-    ens.transform_template(block_agum,in_path,out_path)
+def img_agum(in_path,ae_model):
+    full_path=in_path+"/full"
+    agum_path=in_path+"/agum"
+    seq_path=in_path+"/seqs"
+    full_seqs=imgs.read_seqs(full_path)
+    agum_seqs=imgs.read_seqs(agum_path)
+    agum_seqs={files.clean_str(name_i)+"_1":seq_i 
+        for name_i,seq_i in agum_seqs.items()}
+    final_seqs={**full_seqs, **agum_seqs}
+    frames.ae.extract(final_seqs,ae_model,seq_path)
+    exp.basic_feats(seq_path)
 
-def block_agum(in_path,out_path,k=10,t=8):
-    seq_dict=single.read_frame_feats(in_path)
-    train,test=data.split_dict(seq_dict)
-    agum_seq={}
-    for name_i,seq_i in train.items():
-        agum_seq[name_i]=seq_i
-        for j in range(k):
-            name_j="%s_%d" %(name_i,j)
-            agum_seq[name_j]=sample_blocks(seq_i,t)
-    agum_seq.update(test)
-    single.save_frame_feats(agum_seq,out_path)
-
-def sample_blocks(seq_i,k):
-    n_blocks=int(seq_i.shape[0]/k)
-    max_j=seq_i.shape[0]-k
-    indexes=np.random.randint(max_j, size=n_blocks)
-    indexes=np.sort(indexes)
-    blocks=[seq_i[j:j+k]  for j in indexes]
-    new_seq_j=np.concatenate(blocks,axis=0)
-    return new_seq_j
-
-if __name__=="__main__":
-    path_i="../ens5/basic/spline"
-    ens_agum(path_i,"agum_ens")
+img_agum("../agum/simple","../agum/l1/ae") 

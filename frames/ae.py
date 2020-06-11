@@ -12,7 +12,7 @@ def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
     train,test=data.split_dict(frames)
     X,y=data.to_frame_dataset(train)
     X=np.array(X)
-    add_noise(X)
+#    add_noise(X)
     params={'n_channels':X.shape[-1]}
     model,auto=make_autoencoder(params)
     model.summary()
@@ -59,9 +59,10 @@ def reconstruct(in_path,model_path,out_path=None,diff=False):
         rec_frames[name_i]=rec_seq_i
     imgs.save_seqs(rec_frames,out_path)
 
-def extract(in_path,model_path,out_path=None):
+def extract(seq_dict,model_path,out_path=None):
     model=load_model(model_path)
-    seq_dict=imgs.read_seqs(in_path)
+    if(type(seq_dict)==str):
+        seq_dict=imgs.read_seqs(seq_dict)
     feat_dict=single.extractor_template(seq_dict,model)
     single.save_frame_feats(feat_dict,out_path)
 
