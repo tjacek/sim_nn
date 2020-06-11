@@ -1,6 +1,6 @@
 import os.path
 import frames,frames.ae
-import imgs,files,exp
+import imgs,files,exp #,data
 
 def img_agum(in_path,ae_model):
     final_seqs,paths=get_agum_data(in_path)
@@ -13,6 +13,7 @@ def ens_agum(in_path,model_path):
     files.make_dir(ens_path)    
     final_seqs,paths=get_agum_data(in_path)
     seq_path= ens_path+"/seqs"
+    final_seqs=imgs.seq_tranform(format_seq,final_seqs)
     frames.ens_extract(final_seqs,model_path,seq_path)
 
 def get_agum_data(in_path):
@@ -23,6 +24,11 @@ def get_agum_data(in_path):
         for name_i,seq_i in agum_seqs.items()}
     final_seqs={**full_seqs, **agum_seqs}
     return final_seqs,paths
+
+def format_seq(frame):
+    size=frame.shape[1]
+    new_frame=frame[size:,:]
+    return new_frame	
 
 #img_agum("../agum/simple","../agum/l1/ae") 
 ens_agum("../agum/simple","../ens5/frame_models")
