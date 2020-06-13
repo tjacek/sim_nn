@@ -15,4 +15,9 @@ def get_proportion(in_path):
     prop=[ dim_i[0]/dim_i[1] for dim_i in dims]
     print("mean%s median%s" % (np.mean(prop),np.median(prop)))
 
-get_proportion("../agum/box")
+def count_frames(in_path):
+    img_seq=imgs.read_seqs(in_path)
+    seq_len=[len(seq_i) for seq_i in img_seq.values()]
+    return sum(seq_len)
+
+print(count_frames("../agum/box"))
