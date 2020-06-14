@@ -6,6 +6,7 @@ def img_agum(in_path,ae_model):
     final_seqs,paths=get_agum_data(in_path)
     frames.ae.extract(final_seqs,ae_model,paths["seqs"])
     exp.basic_feats(paths["seqs"])
+    exp.stats_feats(paths["seqs"])
 
 def ens_agum(in_path,model_path):
     dir_path=os.path.split(in_path)[0]
@@ -30,5 +31,6 @@ def format_seq(frame):
     new_frame=frame[size:,:]
     return new_frame	
 
-#img_agum("../agum/simple","../agum/l1/ae") 
-ens_agum("../agum/simple","../ens5/frame_models")
+img_agum("../agum/gap","../agum/l1/ae") 
+#ens_agum("../agum/gap","../ens5/frame_models")
+#exp.basic_feats("../agum/ens/seqs")
