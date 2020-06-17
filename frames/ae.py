@@ -7,8 +7,9 @@ from keras.models import load_model
 import imgs,data,single
 from keras import regularizers
 
-def make_model(in_path,out_path=None,n_epochs=1000,recon=True):
-    frames=imgs.read_seqs(in_path)
+def make_model(frames,out_path=None,n_epochs=1000,recon=True):
+    if(type(frames)==str):
+        frames=imgs.read_seqs(frames)
     train,test=data.split_dict(frames)
     X,y=data.to_frame_dataset(train)
     X=np.array(X)

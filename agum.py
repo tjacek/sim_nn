@@ -5,17 +5,26 @@ import imgs,files,exp #,data
 def img_agum(in_path,ae_model):
     final_seqs,paths=get_agum_data(in_path)
     frames.ae.extract(final_seqs,ae_model,paths["seqs"])
+    exp.stats_feats(paths["seqs"])
     exp.basic_feats(paths["seqs"])
     exp.stats_feats(paths["seqs"])
 
-def ens_agum(in_path,model_path):
-    dir_path=os.path.split(in_path)[0]
-    ens_path=dir_path+"/ens"
+def ens_agum(in_path,model_path,feats=False):
+    ens_path=in_path+"/ens"
     files.make_dir(ens_path)    
     final_seqs,paths=get_agum_data(in_path)
     seq_path= ens_path+"/seqs"
     final_seqs=imgs.seq_tranform(format_seq,final_seqs)
     frames.ens_extract(final_seqs,model_path,seq_path)
+    if(feats):
+        exp.stats_feats(seq_path)
+        exp.basic_feats(seq_path)
+
+def retrain_ae(in_path,out_path,n_epochs=1500):
+    final_seqs,paths=get_agum_data(in_path)
+    retrain_path="%s/retrain" % in_path
+    files.make_dir(retrain_path)
+    frames.ae.make_model(final_seqs,retrain_path+"/ae",n_epochs,recon=True)
 
 def get_agum_data(in_path):
     paths=exp.get_paths(in_path,["full","agum","seqs"])
@@ -29,8 +38,14 @@ def get_agum_data(in_path):
 def format_seq(frame):
     size=frame.shape[1]
     new_frame=frame[size:,:]
-    return new_frame	
+    return new_frame
 
+<<<<<<< HEAD
+#img_agum("../smooth/gap","../smooth/common/ae") 
+#ens_agum("../smooth/gap","../smooth/ens/frame_models",True)
+retrain_ae("../smooth/gap","../smooth/gap")
+=======
 img_agum("../agum/gap","../agum/l1/ae") 
 #ens_agum("../agum/gap","../ens5/frame_models")
 #exp.basic_feats("../agum/ens/seqs")
+>>>>>>> 3bd50ee3ebc12c0f23ad95d08affafc7dafb4978
