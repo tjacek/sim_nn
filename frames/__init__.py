@@ -16,7 +16,7 @@ def ens_extract(frame_path,model_path,out_path):
 
 def extract(model_path,out_path,frames):
     if(type(frames)==str):
-        frames=imgs.read_seqs(frame_path)
+        frames=imgs.read_seqs(frames)
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
