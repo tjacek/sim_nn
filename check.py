@@ -1,7 +1,7 @@
 import numpy as np
 from keras.models import load_model
-from keras.models import load_model
-import files,imgs
+from collections import defaultdict
+import files,imgs,data
 
 def check_model(in_path):
     model_path= in_path+"/frame_models"
@@ -20,4 +20,25 @@ def count_frames(in_path):
     seq_len=[len(seq_i) for seq_i in img_seq.values()]
     return sum(seq_len)
 
-print(count_frames("../agum/box"))
+def compare_lenght(in_path):
+    seq_dict=imgs.read_seqs(in_path)
+    len_dict=get_len_dict(seq_dict)
+    train,test=data.split(len_dict.keys())
+    train,test=by_cat(train),by_cat(test)
+    for cat_i in train.keys():
+        train_i=np.mean([len_dict[name_i] for name_i in train[cat_i]])
+        test_i=np.mean([len_dict[name_i] for name_i in test[cat_i]])
+        print("%d,%.2f,%.2f" % (cat_i,test_i,train_i))
+
+def by_cat(names):
+    cat_dict=defaultdict(lambda:[])
+    for name_i in names:
+        cat_i=int(name_i.split("_")[0])-1
+        cat_dict[cat_i].append(name_i)
+    return cat_dict
+
+def get_len_dict(seq_dict):
+    return { files.clean_str(name_i):len(seq_i) 
+                for name_i,seq_i in seq_dict.items()}
+
+compare_lenght("../agum/box")
