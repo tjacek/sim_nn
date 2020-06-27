@@ -40,12 +40,7 @@ def format_seq(frame):
     new_frame=frame[size:,:]
     return new_frame
 
-<<<<<<< HEAD
-#img_agum("../smooth/gap","../smooth/common/ae") 
-#ens_agum("../smooth/gap","../smooth/ens/frame_models",True)
-retrain_ae("../smooth/gap","../smooth/gap")
-=======
-img_agum("../agum/gap","../agum/l1/ae") 
+if __name__ == "__main__":
+    img_agum("../agum/gap","../agum/l1/ae") 
 #ens_agum("../agum/gap","../ens5/frame_models")
 #exp.basic_feats("../agum/ens/seqs")
->>>>>>> 3bd50ee3ebc12c0f23ad95d08affafc7dafb4978

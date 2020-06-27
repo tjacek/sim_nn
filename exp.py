@@ -61,9 +61,10 @@ def prepare_dirs(in_path,name,sufixes):
 def get_paths(dir_path,sufixes):
     return {sufix_i:"%s/%s"%(dir_path,sufix_i) for sufix_i in sufixes }
 
-#ae_seqs("../proj2/full",n_epochs=1500)
-#sim_seqs("../ens_sim/tmp",350)
+if __name__ == "__main__":
+#ae_seqs("../MHAD/full_bad",n_epochs=1500)
+    sim_seqs("../MHAD/ens/frames",5)
 #stats_feats("../ens_sim/seqs")
-basic_feats("../ens_sim/seqs",1000)
+#basic_feats("../ens_sim/seqs",1000)
 
 #sim_feats("sim/full",5)
