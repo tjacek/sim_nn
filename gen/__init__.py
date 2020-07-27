@@ -34,6 +34,8 @@ def get_dist(n):
     dist=np.amin(np.array([inc,dec]),axis=0)
     dist=dist.astype(float)
     dist=dist**2
+    if(np.sum(dist)==0):
+        dist.fill(1.0)
     dist/=np.sum(dist)
     return dist
 
