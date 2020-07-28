@@ -8,7 +8,8 @@ def ens_stats(in_path,out_path):
 def compute_ts_feats(in_path,out_path):
     data_dict=single.read_frame_feats(in_path)
     feat_dict={ name_i:feat_vector(seq_i)
-                    for name_i,seq_i in data_dict.items()}
+                    for name_i,seq_i in data_dict.items()
+                            if(seq_i.shape[0]>1)}
     single.save_ts_feats(feat_dict,out_path)
 
 def feat_vector(seq_j):
