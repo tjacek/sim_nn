@@ -12,15 +12,20 @@ def make_model(frames,out_path=None,n_epochs=1000,recon=True):
         frames=imgs.read_seqs(frames)
     train,test=data.split_dict(frames)
     X,y=data.to_frame_dataset(train)
+    X=sub_sample(X)
     X=np.array(X)
 #    add_noise(X)
     params={'n_channels':X.shape[-1]}
     model,auto=make_autoencoder(params)
     model.summary()
-    model.fit(X,X,epochs=n_epochs,batch_size=64)
+    model.fit(X,X,epochs=n_epochs,batch_size=16)
     auto.save(out_path)
     if(recon):
         model.save(out_path+"_recon")
+
+def sub_sample(X):
+    return [ x_i for i,x_i in enumerate(X)
+                if( (i%3)==0)] 
 
 def make_autoencoder(params):
     input_img = Input(shape=(64, 64, params['n_channels']))
@@ -72,19 +77,19 @@ def add_noise(X):
     noise = np.random.normal(loc=0.0, scale=std, size=X.shape)
     return X+noise
 
-class CustomLoss(object):
-    def __init__(self,model):
-        self.model=model
-
-    def __call__(self,y_pred, y_true, sample_weight=None):
-        mse = K.mean(K.square(y_true - y_pred), axis=1)
-        lam = 1e-4
-        W = K.variable(value=self.model.get_layer('hidden').get_weights()[0])  # N x N_hidden
-        W = K.transpose(W)  # N_hidden x N
-        h = self.model.get_layer('hidden').output
-        dh = h * (1 - h)  # N_batch x N_hidden
+#class CustomLoss(object):
+#    def __init__(self,model):
+#        self.model=model
+#
+#    def __call__(self,y_pred, y_true, sample_weight=None):
+#        mse = K.mean(K.square(y_true - y_pred), axis=1)
+#        lam = 1e-4
+#        W = K.variable(value=self.model.get_layer('hidden').get_weights()[0])  # N x N_hidden
+#        W = K.transpose(W)  # N_hidden x N
+#        h = self.model.get_layer('hidden').output
+#        dh = h * (1 - h)  # N_batch x N_hidden
 
         # N_batch x N_hidden * N_hidden x 1 = N_batch x 1
-        contractive = lam * K.sum(dh**2 * K.sum(W**2, axis=1), axis=1)
-        raise Exception(y_pred.shape)
-        return mse #+ contractive
+#        contractive = lam * K.sum(dh**2 * K.sum(W**2, axis=1), axis=1)
+#        raise Exception(y_pred.shape)
+#        return mse #+ contractive
