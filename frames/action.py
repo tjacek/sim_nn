@@ -3,7 +3,13 @@ from keras.models import load_model
 from keras.models import Model
 import numpy as np
 import data,imgs,single
-import frames,sim,gen
+import frames,sim,gen,ens
+
+def ens_train(in_path,out_path,n_epochs=5):
+    ens.train_template(make_model,in_path,out_path,n_epochs)
+
+def ens_extract(frame_path,model_path,out_path):
+    ens.transform_template(extract,model_path,out_path,frame_path,False)
 
 def extract(frame_path,model_path,out_path):	
     action_frames=imgs.read_frames(frame_path,True)
@@ -16,12 +22,13 @@ def extract(frame_path,model_path,out_path):
     feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
     single.save_ts_feats(feat_dict,out_path)
 
-def make_model(in_path,out_path,n_epochs=5):
+def make_model(in_path,out_path,n_epochs=5,i=None):
     action_frames=imgs.read_frames(in_path,True)
     train,test=data.split_dict(action_frames)
     X=data.format_frames(list(train.values())) 
-    y=[ int(name_i.split("_")[0])-1 
-            for name_i in list(train.keys())]
+    y=np.array([ int(name_i.split("_")[0])-1 
+            for name_i in list(train.keys())])
+    y=(y==i).astype(int)
     y=keras.utils.to_categorical(y)
     params={"input_shape":(64,64,X[0].shape[-1])} 
     pair_X,pair_y=gen.full_data(X,y)
