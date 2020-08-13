@@ -11,7 +11,7 @@ def ens_train(in_path,out_path,n_epochs=5):
 def ens_extract(frame_path,model_path,out_path):
     ens.transform_template(extract,model_path,out_path,frame_path,False)
 
-def extract(frame_path,model_path,out_path):	
+def extract(model_path,out_path,frame_path):	
     action_frames=imgs.read_frames(frame_path,True)
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
@@ -28,10 +28,14 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
     X=data.format_frames(list(train.values())) 
     y=np.array([ int(name_i.split("_")[0])-1 
             for name_i in list(train.keys())])
-    y=(y==i).astype(int)
-    y=keras.utils.to_categorical(y)
+#    y=(y==i).astype(int)
+    
     params={"input_shape":(64,64,X[0].shape[-1])} 
-    pair_X,pair_y=gen.full_data(X,y)
+    if(not (i is None)):
+        pair_X,pair_y=gen.binary_data(X,y,n_samples=None)
+    else:
+        y=keras.utils.to_categorical(y)
+        pair_X,pair_y=gen.full_data(X,y)
     sim_metric,model=sim.build_siamese(params,frames.make_five)
     sim_metric.fit(pair_X,pair_y,epochs=n_epochs,batch_size=64)
     if(out_path):

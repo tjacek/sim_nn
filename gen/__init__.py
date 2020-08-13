@@ -6,9 +6,13 @@ def binary_data(X_old,y_old,binary_cat=0,n_samples=3):
         if(y_i==binary_cat):
             x_i=X_old[i]
             for j,x_j in enumerate(X_old):
-                X_ij,y_ij=make_pairs(x_i,x_j,y_i,y_old[j],n_samples)
-                X+=X_ij
-                y+=y_ij
+                if(n_samples):
+                    X_ij,y_ij=make_pairs(x_i,x_j,y_i,y_old[j],n_samples)
+                    X+=X_ij
+                    y+=y_ij
+                else:
+                    X.append((x_i,x_j))
+                    y.append(np.dot(y_i,y_old[j]))
     X,y=np.array(X),np.array(y)
     X=[X[:,0],X[:,1]]
     return X,y
