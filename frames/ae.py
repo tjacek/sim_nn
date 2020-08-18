@@ -15,7 +15,7 @@ def make_model(frames,out_path=None,n_epochs=1000,recon=True):
     X=sub_sample(X)
     X=np.array(X)
 #    add_noise(X)
-    params={'n_channels':X.shape[-1]}
+    params={'n_channels':X.shape[-1],"dim":(X.shape[1],X.shape[2])}
     model,auto=make_autoencoder(params)
     model.summary()
     model.fit(X,X,epochs=n_epochs,batch_size=16)
@@ -28,7 +28,9 @@ def sub_sample(X):
                 if( (i%3)==0)] 
 
 def make_autoencoder(params):
-    input_img = Input(shape=(64, 64, params['n_channels']))
+#    raise Exception(params)
+    x,y=params["dim"]
+    input_img = Input(shape=(x,y, params['n_channels']))
     n_kerns=32
     x = Conv2D(n_kerns, (5, 5), activation='relu',padding='same')(input_img)
     x = MaxPooling2D((2, 2))(x)
