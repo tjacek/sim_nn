@@ -32,9 +32,10 @@ def make_sim_template(in_path,out_path,n_epochs,gen_pairs):
     frames=imgs.read_seqs(in_path)
     train,test=data.split_dict(frames)
     X,y=data.to_seq_dataset(train)
-    X,y=gen_pairs(X,y) #gen.binary_data(X,y,cat_i,n_samples)
+    X,y=gen_pairs(X,y) 
+#    X,y=gen.binary_data(X,y,cat_i,n_samples)
     n_channels=X[0].shape[-1]
-    params={"input_shape":(64,64,n_channels)} 
+    params={"input_shape":(X[0].shape[1],X[0].shape[2],n_channels)} 
     sim_metric,model=sim.build_siamese(params,make_five)
     sim_metric.fit(X,y,epochs=n_epochs,batch_size=100)
     if(out_path):

@@ -37,7 +37,7 @@ def ae_seqs(in_path,n_epochs=1000):
 
 def sim_seqs(in_path,n_epochs=350):
     paths=prepare_dirs(in_path,None,["frame_models","seqs"])
-    frames.ens_train(in_path,paths["frame_models"],n_epochs)
+#    frames.ens_train(in_path,paths["frame_models"],n_epochs)
     frames.ens_extract(in_path,paths["frame_models"],paths["seqs"])
 
 def basic_seqs(in_path,n_epochs=1000):
@@ -62,9 +62,9 @@ def get_paths(dir_path,sufixes):
     return {sufix_i:"%s/%s"%(dir_path,sufix_i) for sufix_i in sufixes }
 
 if __name__ == "__main__":
-#ae_seqs("../MHAD/full_bad",n_epochs=1500)
-    sim_seqs("../MHAD/ens/frames",5)
-#stats_feats("../ens_sim/seqs")
-#basic_feats("../ens_sim/seqs",1000)
-
-#sim_feats("sim/full",5)
+#    ae_seqs("../clean/exp2/frames",n_epochs=300)
+#    sim_seqs("../clean/exp2/frames",350)
+    in_path="../clean/exp2/ens/seqs"
+    stats_feats(in_path)
+    basic_feats(in_path,1000)
+    sim_feats(in_path,350)
