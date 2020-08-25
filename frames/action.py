@@ -16,7 +16,7 @@ def extract(model_path,out_path,frame_path):
     model=load_model(model_path)
     extractor=Model(inputs=model.input,
                 outputs=model.get_layer("hidden").output)
-    X=data.format_frames(list(action_frames.values()))
+    X=action_format(action_frames)
     X_feats=model.predict(X)
     names=list(action_frames.keys())
     feat_dict={ names[i]:feat_i for i,feat_i in enumerate(X_feats)}
@@ -25,12 +25,12 @@ def extract(model_path,out_path,frame_path):
 def make_model(in_path,out_path,n_epochs=5,i=None):
     action_frames=imgs.read_frames(in_path,True)
     train,test=data.split_dict(action_frames)
-    X=data.format_frames(list(train.values())) 
+    X=action_format(train)
     y=np.array([ int(name_i.split("_")[0])-1 
             for name_i in list(train.keys())])
-#    y=(y==i).astype(int)
-    
-    params={"input_shape":(64,64,X[0].shape[-1])} 
+
+    dims=X.shape
+    params={"input_shape":(dims[1],dims[2],1)} 
     if(not (i is None)):
         pair_X,pair_y=gen.binary_data(X,y,n_samples=None)
     else:
@@ -40,3 +40,9 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
     sim_metric.fit(pair_X,pair_y,epochs=n_epochs,batch_size=64)
     if(out_path):
         model.save(out_path)
+
+def action_format(train):
+    frames=list(train.values())
+    X=np.array(frames)
+    X=np.expand_dims(X, -1)
+    return X
