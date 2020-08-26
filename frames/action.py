@@ -32,7 +32,7 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
     dims=X.shape
     params={"input_shape":(dims[1],dims[2],1)} 
     if(not (i is None)):
-        pair_X,pair_y=gen.binary_data(X,y,n_samples=None)
+        pair_X,pair_y=gen.binary_data(X,y,binary_cat=i,n_samples=None)
     else:
         y=keras.utils.to_categorical(y)
         pair_X,pair_y=gen.full_data(X,y)
