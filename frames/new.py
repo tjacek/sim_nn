@@ -1,4 +1,10 @@
-import data,imgs,sim,ens
+import keras
+import keras.backend as K
+from keras.models import Model,Sequential
+from keras.layers import Input,Add,Dense, Dropout, Flatten,BatchNormalization
+from keras.layers import Conv2D, MaxPooling2D,ZeroPadding2D,Activation,Lambda
+from keras import regularizers
+import data,imgs,sim,ens,gen
 
 class SimFrames(object):
     def __init__(self,gen_pairs,make_model):
@@ -9,7 +15,7 @@ class SimFrames(object):
         frames=imgs.read_seqs(in_path)
         train,test=data.split_dict(frames)
         X,y=data.to_seq_dataset(train)
-        X,y=self.gen_pairs(X,y,cat_i) 
+        X,y=self.gen(X,y,cat_i) 
         n_channels=X[0].shape[-1]
         params={"input_shape":(X[0].shape[1],X[0].shape[2],n_channels)} 
         sim_metric,model=sim.build_siamese(params,self.make_model)
@@ -21,6 +27,7 @@ class SimFrames(object):
         ens.train_template(self,in_path,out_path,n_epochs)
 
 def get_sim_frames(n_samples=3):
+    assert(type(n_samples)==int)
     def gen_helper(X,y,cat_i):
         return gen.binary_data(X,y,cat_i,n_samples)
     def model_helper(model):
