@@ -15,7 +15,8 @@ def make_model(frames,out_path=None,n_epochs=1000,recon=True):
     X=sub_sample(X)
     X=np.array(X)
 #    add_noise(X)
-    params={'n_channels':X.shape[-1],"dim":(X.shape[1],X.shape[2])}
+    params={'n_channels':X.shape[-1],"dim":(X.shape[1],X.shape[2]),
+            'scale':(4,4)}
     model,auto=make_autoencoder(params)
     model.summary()
     model.fit(X,X,epochs=n_epochs,batch_size=16)
@@ -28,12 +29,12 @@ def sub_sample(X):
                 if( (i%3)==0)] 
 
 def make_autoencoder(params):
-#    raise Exception(params)
+    scale = params["scale"] if("scale" in params) else (2,2)
     x,y=params["dim"]
     input_img = Input(shape=(x,y, params['n_channels']))
     n_kerns=32
     x = Conv2D(n_kerns, (5, 5), activation='relu',padding='same')(input_img)
-    x = MaxPooling2D((2, 2))(x)
+    x = MaxPooling2D(scale)(x)
     x = Conv2D(16, (5, 5), activation='relu',padding='same')(x)
     x = MaxPooling2D((2, 2))(x)
     shape = K.int_shape(x)
@@ -43,7 +44,7 @@ def make_autoencoder(params):
     x = Reshape((shape[1], shape[2], shape[3]))(x)
     x = UpSampling2D((2, 2))(x)
     x = Conv2DTranspose(16, (5, 5), activation='relu',padding='same')(x)
-    x = UpSampling2D((2, 2))(x)
+    x = UpSampling2D(scale)(x)
     x = Conv2DTranspose(n_kerns, (5, 5), activation='relu',padding='same')(x)
     
     x=Conv2DTranspose(filters=params['n_channels'],kernel_size=n_kerns,padding='same')(x)
@@ -78,20 +79,3 @@ def add_noise(X):
     std=0.25*np.mean(X)
     noise = np.random.normal(loc=0.0, scale=std, size=X.shape)
     return X+noise
-
-#class CustomLoss(object):
-#    def __init__(self,model):
-#        self.model=model
-#
-#    def __call__(self,y_pred, y_true, sample_weight=None):
-#        mse = K.mean(K.square(y_true - y_pred), axis=1)
-#        lam = 1e-4
-#        W = K.variable(value=self.model.get_layer('hidden').get_weights()[0])  # N x N_hidden
-#        W = K.transpose(W)  # N_hidden x N
-#        h = self.model.get_layer('hidden').output
-#        dh = h * (1 - h)  # N_batch x N_hidden
-
-        # N_batch x N_hidden * N_hidden x 1 = N_batch x 1
-#        contractive = lam * K.sum(dh**2 * K.sum(W**2, axis=1), axis=1)
-#        raise Exception(y_pred.shape)
-#        return mse #+ contractive
