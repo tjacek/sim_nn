@@ -24,8 +24,11 @@ def extract(model_path,out_path,frame_path):
 
 def make_model(in_path,out_path,n_epochs=5,i=None):
     action_frames=imgs.read_frames(in_path,True)
+
     train,test=data.split_dict(action_frames)
+    assert (equal_dims(train))
     X=action_format(train)
+
     y=np.array([ int(name_i.split("_")[0])-1 
             for name_i in list(train.keys())])
 
@@ -46,3 +49,7 @@ def action_format(train):
     X=np.array(frames)
     X=np.expand_dims(X, -1)
     return X
+
+def equal_dims(train):
+    dims=[ img_i.shape for img_i in list(train.values())]
+    return all([dims[0]==dim_i  for dim_i in dims] )
