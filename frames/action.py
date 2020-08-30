@@ -28,12 +28,15 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
     train,test=data.split_dict(action_frames)
     assert (equal_dims(train))
     X=action_format(train)
-
     y=np.array([ int(name_i.split("_")[0])-1 
             for name_i in list(train.keys())])
-
     dims=X.shape
     params={"input_shape":(dims[1],dims[2],1)} 
+    model=sim_model(X,y,i,params,n_epochs)
+    if(out_path):
+        model.save(out_path)
+
+def sim_model(X,y,i,params,n_epochs):
     if(not (i is None)):
         pair_X,pair_y=gen.binary_data(X,y,binary_cat=i,n_samples=None)
     else:
@@ -41,8 +44,7 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
         pair_X,pair_y=gen.full_data(X,y)
     sim_metric,model=sim.build_siamese(params,frames.make_five)
     sim_metric.fit(pair_X,pair_y,epochs=n_epochs,batch_size=64)
-    if(out_path):
-        model.save(out_path)
+    return model
 
 def action_format(train):
     frames=list(train.values())
