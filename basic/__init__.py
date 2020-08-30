@@ -35,13 +35,15 @@ def train_model(in_path,out_path,n_epochs=5,cat_i=0):
     n_cats= 2 if(type(cat_i)==int) else y.shape[-1]
     n_channels=X[0].shape[-1]
     model=make_model(n_cats,n_channels)
-    model.fit(X,y,epochs=n_epochs,batch_size=100)
+    model.fit(X,y,epochs=n_epochs,batch_size=32)
     if(out_path):
         model.save(out_path)
 
-def make_model(n_cats,n_channels):
-    input_img = Input(shape=(64, 64, n_channels))
+#def make_model(n_cats,n_channels):
+def make_model(params):
+    input_img = Input(shape=params["input_shape"])
     x=input_img
+    n_cats=params['n_cats']  
     kern_size,pool_size,filters=(3,3),(2,2),[32,16,16,16]
     for filtr_i in filters:
         x = Conv2D(filtr_i, kern_size, activation='relu', padding='same')(x)

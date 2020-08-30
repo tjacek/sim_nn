@@ -2,7 +2,7 @@ import keras.utils
 from keras.models import load_model
 from keras.models import Model
 import numpy as np
-import data,imgs,single
+import data,imgs,single,basic
 import frames,sim,gen,ens
 
 def ens_train(in_path,out_path,n_epochs=5):
@@ -32,7 +32,8 @@ def make_model(in_path,out_path,n_epochs=5,i=None):
             for name_i in list(train.keys())])
     dims=X.shape
     params={"input_shape":(dims[1],dims[2],1)} 
-    model=sim_model(X,y,i,params,n_epochs)
+    model=basic_model(X,y,i,params,n_epochs)
+#    model=sim_model(X,y,i,params,n_epochs)
     if(out_path):
         model.save(out_path)
 
@@ -43,7 +44,16 @@ def sim_model(X,y,i,params,n_epochs):
         y=keras.utils.to_categorical(y)
         pair_X,pair_y=gen.full_data(X,y)
     sim_metric,model=sim.build_siamese(params,frames.make_five)
+    
     sim_metric.fit(pair_X,pair_y,epochs=n_epochs,batch_size=64)
+    return model
+
+def basic_model(X,y,i,params,n_epochs):
+    n_channels=X.shape[-1]
+    params["n_cats"]= max(y)+1
+    model=basic.make_model(params)
+    y=keras.utils.to_categorical(y)
+    model.fit(X,y,epochs=n_epochs,batch_size=32)
     return model
 
 def action_format(train):
