@@ -23,8 +23,8 @@ class SimFrames(object):
         if(out_path):
             model.save(out_path)  
 
-    def ens_train(self,in_path,out_path,n_epochs=5):
-        ens.train_template(self,in_path,out_path,n_epochs)
+    def ens_train(self,in_path,out_path,n_epochs=5,n_cats=20):
+        ens.train_template(self,in_path,out_path,n_epochs,n_cats)
 
 def get_sim_frames(n_samples=3):
     assert(type(n_samples)==int)

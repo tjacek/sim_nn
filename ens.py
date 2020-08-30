@@ -1,9 +1,9 @@
 import os.path
 import single,files,basic
 
-def train_template(fun,in_path,out_path,n_epochs=5):
+def train_template(fun,in_path,out_path,n_epochs=5,n_cats=20):
     files.make_dir(out_path)
-    for i in range(20):
+    for i in range(n_cats):
         out_i='%s/nn%d'%(out_path,i)
         print(out_i)
         fun(in_path,out_i,n_epochs,i)
