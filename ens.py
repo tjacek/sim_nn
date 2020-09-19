@@ -3,7 +3,11 @@ import single,files,basic
 
 def train_template(fun,in_path,out_path,n_epochs=5,n_cats=20):
     files.make_dir(out_path)
-    for i in range(n_cats):
+    if(type(n_cats)==tuple):
+        cat_iter=range(n_cats[0],n_cats[1]) 
+    else:
+        cat_iter=range(n_cats)    
+    for i in cat_iter:
         out_i='%s/nn%d'%(out_path,i)
         print(out_i)
         fun(in_path,out_i,n_epochs,i)
