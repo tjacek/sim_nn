@@ -1,12 +1,16 @@
 import numpy as np
+import os.path
 from keras.models import load_model
 from collections import defaultdict
 import files,imgs,data
 
 def check_model(in_path):
-    model_path= in_path+"/frame_models"
-    paths=files.top_files(model_path)
-    model=load_model(paths[0])
+    if(os.path.isdir(in_path)):
+        model_path= in_path+"/frame_models"
+        paths=files.top_files(model_path)
+        model=load_model(paths[0])
+    else:
+        model=load_model(in_path)
     model.summary()
 
 def get_proportion(in_path):
@@ -41,4 +45,4 @@ def get_len_dict(seq_dict):
     return { files.clean_str(name_i):len(seq_i) 
                 for name_i,seq_i in seq_dict.items()}
 
-compare_lenght("../agum/box")
+check_model("../fourth_exp/scale/ae")
