@@ -55,11 +55,15 @@ def save_seqs(seq_dict,out_path):
         seq_path_i=out_path+'/'+name_i
         save_frames(seq_path_i,seq_i)
 
-def read_frames(seq_path_i,as_dict=False):
+def read_frames(seq_path_i,as_dict=False,img_type="binary"):
+    if(img_type=="color"):
+        img_type=cv2.COLOR_BGR2RGB
+    else:
+        img_type=cv2.IMREAD_GRAYSCALE
     if(as_dict):
-        return {files.clean_str(path_j):cv2.imread(path_j,cv2.IMREAD_GRAYSCALE)
+        return {files.clean_str(path_j):cv2.imread(path_j,img_type)
                     for path_j in files.top_files(seq_path_i)}
-    return [ cv2.imread(path_j, cv2.IMREAD_GRAYSCALE)
+    return [ cv2.imread(path_j, img_type)
                 for path_j in files.top_files(seq_path_i)]
 
 def save_frames(seq_path_i,seq_i):
