@@ -29,3 +29,7 @@ def clean_str(name_i):
     name_i=name_i.split("/")[-1]
     digits=[ str(int(digit_i)) for digit_i in re.findall(r'\d+',name_i)]
     return "_".join(digits)
+
+def clean_dict(dict_i):
+    return {clean_str(name_j):seq_j  
+                for name_j,seq_j in dict_i.items()}

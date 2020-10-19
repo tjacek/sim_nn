@@ -12,6 +12,8 @@ def simple_agum(in_path,ae_model):
 def unify_agum(paths,ae_model,out_path):
     img_dict=[ imgs.read_seqs(path_i)
                 for path_i in paths]
+    img_dict=[files.clean_dict(dict_i) 
+                for dict_i in img_dict]
     agum_set=img_dict[0]
     for i,dict_i in enumerate(img_dict[1:]):
         for name_j,seq_j in dict_i.items():
@@ -24,7 +26,7 @@ def unify_agum(paths,ae_model,out_path):
     simple_agum(out_path,ae_model)
 
 def in_train(name_j):
-    name_j=files.clean_str(name_j)
+#    name_j=files.clean_str(name_j)
     person_j=int(name_j.split("_")[1])
     return (person_j %2)==1
 #def img_agum(in_path,ae_model):
