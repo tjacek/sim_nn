@@ -18,7 +18,7 @@ def make_model(in_path,out_path,n_epochs=5):
     train,test=data.split_dict(seq_dict)
     X,y=get_data(train)
     params={'n_cats':y.shape[1],'ts_len':X.shape[1],'n_feats':X.shape[2]}
-    model=basic_model(params)
+    model=clf_model(params)
     model.fit(X,y,epochs=n_epochs,batch_size=64)
     model.save(out_path)
 
@@ -40,6 +40,26 @@ def get_data(data_dict):
     y=keras.utils.to_categorical(y)
     return X,y
 
+def clf_model(params):
+    x,input_img=basic_model(params)
+    x=Dropout(0.5)(x)
+    x=Dense(units=params['n_cats'],activation='softmax')(x)
+    model = Model(input_img, x)
+    model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.SGD(lr=0.001,  momentum=0.9, nesterov=True))
+    model.summary()
+    return model
+
+def reg_model(params,n_units=4):
+    x,input_img=basic_model(params)
+#    x=Dropout(0.5)(x)
+    x=Dense(units=n_units,activation='relu')(x)
+    model = Model(input_img, x)
+    model.compile(loss='mean_squared_error',
+              optimizer=keras.optimizers.Adam(lr=0.00001))
+    model.summary()
+    return model
+
 def basic_model(params):
     activ='relu'
     input_img=Input(shape=(params['ts_len'], params['n_feats']))
@@ -50,10 +70,4 @@ def basic_model(params):
     x=MaxPooling1D(pool_size=pool_size[1],name='pool2')(x)
     x=Flatten()(x)
     x=Dense(100, activation='relu',name="hidden",kernel_regularizer=regularizers.l1(0.01),)(x)
-    x=Dropout(0.5)(x)
-    x=Dense(units=params['n_cats'],activation='softmax')(x)
-    model = Model(input_img, x)
-    model.compile(loss=keras.losses.categorical_crossentropy,
-              optimizer=keras.optimizers.SGD(lr=0.001,  momentum=0.9, nesterov=True))
-    model.summary()
-    return model
+    return x,input_img
