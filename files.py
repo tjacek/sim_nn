@@ -1,4 +1,4 @@
-import os,re
+import os,re,os.path
 
 def top_files(path):
     paths=[ path+'/'+file_i for file_i in os.listdir(path)]
@@ -33,3 +33,13 @@ def clean_str(name_i):
 def clean_dict(dict_i):
     return {clean_str(name_j):seq_j  
                 for name_j,seq_j in dict_i.items()}
+
+def prepare_dirs(in_path,name,sufixes):
+    dir_path=os.path.dirname(in_path)
+    if(name):
+        dir_path="%s/%s" %(dir_path,name)
+        make_dir(dir_path)
+    return get_paths(dir_path,sufixes)  
+
+def get_paths(dir_path,sufixes):
+    return {sufix_i:"%s/%s"%(dir_path,sufix_i) for sufix_i in sufixes }
