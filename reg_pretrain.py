@@ -3,11 +3,15 @@ from keras.models import load_model
 import files,spline,stats,data
 import basic.ts,single
 
-def reg_pretrain(in_path):
-	paths=files.get_paths(in_path,['seqs','spline','stats'])
+def reg_pretrain(in_path,reg_epochs=3000,clf_epochs=1000):
+	post=['seqs','spline','stats','feats','reg_nn','clf_nn']
+	paths=files.get_paths(in_path,post)
 	spline.ens_upsample(paths['seqs'],paths["spline"])
 	stats.ens_stats(paths['seqs'],paths['stats'])
-#	print(paths)
+
+	train_reg(paths['spline'],paths['stats'],paths['reg_nn'],3000)
+	pretrain_clf(paths['reg_nn'],paths['spline'],paths['clf_nn'],clf_epochs)
+	basic.ts.ens_extract(paths["spline"],paths["clf_nn"],paths["feats"])
 
 def train_reg(seq_path,feat_path,nn_path,n_epochs=1500):
 	lines=open(feat_path,'r').readlines()
@@ -43,5 +47,10 @@ def pretrain_clf(nn_path,seq_path,clf_path,n_epochs=1000):
 	X,y=basic.ts.get_data(train)
 	clf_model.fit(X,y,epochs=n_epochs,batch_size=64)
 	clf_model.save(clf_path)
+
+reg_pretrain("reg",reg_epochs=3000)
+
 #train_reg("reg/spline","reg/stats","reg/nn")
-pretrain_clf("reg/nn","reg/spline","reg/clf")
+#pretrain_clf("reg/nn","reg/spline","reg/clf")
+
+#basic.ts.ens_extract("reg/spline","reg/clf","reg/feats")
