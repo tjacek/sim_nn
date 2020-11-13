@@ -1,8 +1,26 @@
 import numpy as np
 import os.path
+from keras.models import Model
 from keras.models import load_model
 from collections import defaultdict
 import files,imgs,data
+
+def check_1DCNN(in_path):
+    model=load_model(in_path)
+    model.summary()
+    input_shape=model.input_shape
+    input_shape=(1,input_shape[1],input_shape[2])
+    test=np.zeros(input_shape)
+    test[:,0,:]=1
+    print(np.sum(test[0],axis=0))
+    extractor=Model(inputs=model.input,
+                outputs=model.layers[1].output)
+    extractor.summary()
+    x=extractor.predict(test)[0]
+#    x=np.sum(x,axis=1)
+#    x[x>0]=1
+#    print(np.sum(x))
+    print(x[:,1])
 
 def check_model(in_path):
     if(os.path.isdir(in_path)):
@@ -45,4 +63,4 @@ def get_len_dict(seq_dict):
     return { files.clean_str(name_i):len(seq_i) 
                 for name_i,seq_i in seq_dict.items()}
 
-check_model("../fourth_exp/scale/ae")
+check_1DCNN("../ts_ensemble/skeleton1/basic/models")
