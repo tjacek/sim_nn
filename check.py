@@ -17,10 +17,19 @@ def check_1DCNN(in_path):
                 outputs=model.layers[1].output)
     extractor.summary()
     x=extractor.predict(test)[0]
-#    x=np.sum(x,axis=1)
-#    x[x>0]=1
-#    print(np.sum(x))
-    print(x[:,1])
+    print(x[:,])
+
+def check_filters(in_path):
+    model=load_model(in_path)
+    model.summary()
+    filters=model.layers[3].get_weights()[0]
+    print(filters.shape)
+    filters=np.abs(filters)
+    filters=np.sum(filters,axis=0)
+    print(filters.shape)
+    max_feat=[ np.amax(filtr_i)/np.sum(filtr_i) 
+                for filtr_i in filters.T]
+    print(max_feat)
 
 def check_model(in_path):
     if(os.path.isdir(in_path)):
@@ -63,4 +72,4 @@ def get_len_dict(seq_dict):
     return { files.clean_str(name_i):len(seq_i) 
                 for name_i,seq_i in seq_dict.items()}
 
-check_1DCNN("../ts_ensemble/skeleton1/basic/models")
+check_filters("test/binary_1D_CNN/nn0")
